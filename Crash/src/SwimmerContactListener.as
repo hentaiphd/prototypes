@@ -18,11 +18,10 @@ package
             var fixtureB:b2Fixture = contact.GetFixtureB();
             var bodyA:b2Body = fixtureA.GetBody();
             var bodyB:b2Body = fixtureB.GetBody();
-            var bA_userdata:String = fixtureA.GetUserData().toString();
-            var bB_userdata:String = fixtureB.GetUserData().toString();
+            var force:b2Vec2 = new b2Vec2(50,50);
 
-            //bodyA.ApplyForce(new b2Vec2(0,200), new b2Vec2(0,0));
-            //bodyB.ApplyForce(new b2Vec2(0,200), new b2Vec2(0,0));
+            bodyA.ApplyForce(force, new b2Vec2(0,0));
+            bodyB.ApplyForce(force, new b2Vec2(0,0));
         }
 
         override public function EndContact(contact:b2Contact):void

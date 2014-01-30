@@ -50,7 +50,7 @@ package
             debugText = new FlxText(10, 30, FlxG.width, "");
             add(debugText);
 
-            FlxG.bgColor = 0xff783629;
+            //FlxG.bgColor = 0xff783629;
             setupWorld();
 
             groundBodyDef = new b2BodyDef();
@@ -64,17 +64,19 @@ package
 
             wheelBodyDef = new b2BodyDef();
             wheelBodyDef.type = b2Body.b2_dynamicBody;
-            wheelBodyDef.position.Set(600, 100);
+            wheelBodyDef.position.Set(800/PHYS_SCALE, 0);
             wheelBody = m_world.CreateBody(wheelBodyDef);
             circleShape = new b2CircleShape(1);
             wheelFixtureDef = new b2FixtureDef();
-            var filterData:b2FilterData = new b2FilterData();
-            filterData.maskBits = 0xFFFF;
-            filterData.categoryBits = 0x0001;
-            wheelFixtureDef.filter = filterData;
+            //var filterData:b2FilterData = new b2FilterData();
+            //filterData.maskBits = 0xFFFF;
+            //filterData.categoryBits = 0x0001;
+            //wheelFixtureDef.filter = filterData;
             wheelFixtureDef.shape = circleShape;
             wheelFixtureDef.userData = "swimmer";
+            wheelFixtureDef.isSensor = true;
             wheelFixture = wheelBody.CreateFixture(wheelFixtureDef);
+            wheelFixtureDef.isSensor = false;
 
             waveBodyDef = new b2BodyDef();
             waveBodyDef.position.Set(50/PHYS_SCALE, FlxG.height/PHYS_SCALE);
@@ -82,14 +84,15 @@ package
             waveShape = new b2PolygonShape();
             waveShape.SetAsBox(FlxG.width/PHYS_SCALE, (FlxG.height/2)/PHYS_SCALE);
             waveFixtureDef = new b2FixtureDef();
-            waveFixtureDef.isSensor = true;
-            filterData = new b2FilterData();
-            filterData.maskBits = 0xFFFF;
-            filterData.categoryBits = 0x001;
-            waveFixtureDef.filter = filterData;
+            //filterData = new b2FilterData();
+            //filterData.maskBits = 0xFFFF;
+            //filterData.categoryBits = 0x001;
+            //waveFixtureDef.filter = filterData;
             waveFixtureDef.shape = waveShape;
             waveFixtureDef.userData = "swimmer";
+            waveFixtureDef.isSensor = true;
             waveBody.CreateFixture(waveFixtureDef);
+            waveFixtureDef.isSensor = false;
 
             var md:b2MouseJointDef = new b2MouseJointDef();
             md.bodyA = groundBody;
@@ -110,7 +113,7 @@ package
 
             var this_pos:b2Vec2 = wheelBody.GetPosition();
 
-            if(this_pos.x > FlxG.width/PHYS_SCALE){
+            if(this_pos.x > 900/PHYS_SCALE){
                 wheelBody.SetPosition(new b2Vec2(FlxG.width/PHYS_SCALE,this_pos.y));
             }
             if(this_pos.x < 0){
