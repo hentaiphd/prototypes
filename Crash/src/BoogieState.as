@@ -40,6 +40,12 @@ package
         public var wave2FixtureDef:b2FixtureDef;
         public var wave2Fixture:b2Fixture;
 
+        public var groundBodyDef:b2BodyDef;
+        public var groundBody:b2Body;
+        public var groundShape:b2PolygonShape;
+        public var groundFixtureDef:b2FixtureDef;
+        public var groundFixture:b2Fixture;
+
         public var swim_pos:b2Vec2;
         public var wave1_pos:b2Vec2;
         public var wave2_pos:b2Vec2;
@@ -52,6 +58,7 @@ package
         public static const PHYS_SCALE:Number = 30;
 
         public var swimmerCollision:SwimmerContactListener;
+        public var start_x:Number;
 
         override public function create():void
         {
@@ -61,9 +68,23 @@ package
             //FlxG.bgColor = 0xff783629;
             setupWorld();
 
+            start_x = 300/PHYS_SCALE;
+
+            groundBodyDef = new b2BodyDef();
+            groundBodyDef.position.Set(100/PHYS_SCALE, (FlxG.height*2.5)/PHYS_SCALE);
+            groundBody = m_world.CreateBody(groundBodyDef);
+            groundShape = new b2PolygonShape();
+            groundShape.SetAsBox((FlxG.width*2)/PHYS_SCALE, (FlxG.height/2)/PHYS_SCALE);
+            groundFixtureDef = new b2FixtureDef();
+            groundFixtureDef.shape = groundShape;
+            groundBody.SetUserData("floor");
+            groundFixtureDef.isSensor = true;
+            groundFixture = groundBody.CreateFixture(groundFixtureDef);
+            groundFixtureDef.isSensor = false;
+
             swimBodyDef = new b2BodyDef();
             swimBodyDef.type = b2Body.b2_dynamicBody;
-            swimBodyDef.position.Set((FlxG.width/2)/PHYS_SCALE, (FlxG.height/2)/PHYS_SCALE);
+            swimBodyDef.position.Set(300/PHYS_SCALE, 100/PHYS_SCALE);
             swimBody = m_world.CreateBody(swimBodyDef);
             circleShape = new b2CircleShape(.3);
             swimFixtureDef = new b2FixtureDef();
@@ -75,7 +96,7 @@ package
 
             wave1BodyDef = new b2BodyDef();
             wave1BodyDef.type = b2Body.b2_dynamicBody;
-            wave1BodyDef.position.Set(50/PHYS_SCALE, FlxG.height/PHYS_SCALE);
+            wave1BodyDef.position.Set(100/PHYS_SCALE, 400/PHYS_SCALE);
             wave1Body = m_world.CreateBody(wave1BodyDef);
             wave1Shape = new b2PolygonShape();
             wave1Shape.SetAsBox(wave_width/PHYS_SCALE, (FlxG.height/2)/PHYS_SCALE);
@@ -88,7 +109,7 @@ package
 
             wave2BodyDef = new b2BodyDef();
             wave2BodyDef.type = b2Body.b2_dynamicBody;
-            wave2BodyDef.position.Set(50/PHYS_SCALE, FlxG.height/PHYS_SCALE);
+            wave2BodyDef.position.Set(550/PHYS_SCALE, 400/PHYS_SCALE);
             wave2Body = m_world.CreateBody(wave2BodyDef);
             wave2Shape = new b2PolygonShape();
             wave2Shape.SetAsBox(wave_width/PHYS_SCALE, (FlxG.height/2)/PHYS_SCALE);
@@ -101,7 +122,7 @@ package
 
             //swim
             var md:b2MouseJointDef = new b2MouseJointDef();
-            md.bodyA = wave1Body;
+            md.bodyA = groundBody;
             md.bodyB = swimBody;
             md.target.Set(swimBody.GetPosition().x, swimBody.GetPosition().y);
             md.collideConnected = true;
@@ -110,7 +131,7 @@ package
 
             //wave1
             var mw:b2MouseJointDef = new b2MouseJointDef();
-            mw.bodyA = swimBody;
+            mw.bodyA = groundBody;
             mw.bodyB = wave1Body;
             mw.target.Set(wave1Body.GetPosition().x, wave1Body.GetPosition().y);
             mw.collideConnected = true;
@@ -119,7 +140,7 @@ package
 
             //wave2
             var mw2:b2MouseJointDef = new b2MouseJointDef();
-            mw2.bodyA = swimBody;
+            mw2.bodyA = groundBody;
             mw2.bodyB = wave2Body;
             mw2.target.Set(wave2Body.GetPosition().x, wave2Body.GetPosition().y);
             mw2.collideConnected = true;
@@ -135,20 +156,18 @@ package
             m_world.Step(1.0/30.0, 10, 10);
             m_world.DrawDebugData();
 
-            swim_pos = swimBody.GetPosition();
             wave1_pos = wave1Body.GetPosition();
             wave2_pos = wave2Body.GetPosition();
+            swim_pos = swimBody.GetPosition();
+
+            var r:Number = Math.random()*200;
 
             if(FlxG.mouse.pressed()){
-                var waveMultiplier:Number = 10;
-                var waveStretcher:Number = 5;
-                var i:Number = 1;
-                var sinPosY:Number = Math.sin(i / waveStretcher) * waveMultiplier;
-                var blah:b2Vec2 = new b2Vec2((FlxG.width/2)/PHYS_SCALE, (FlxG.height/2)/PHYS_SCALE);
-                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+(sinPosY/PHYS_SCALE),swim_pos.y+1));
-                i++;
+                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x,swim_pos.y-.3));
+            } else if(swim_pos.x < start_x+(r/PHYS_SCALE)){
+                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+1,swim_pos.y+.4));
             } else {
-                m_mouseJoint.SetTarget(blah);
+                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-1,swim_pos.y+.4));
             }
         }
 
@@ -168,5 +187,22 @@ package
             dbgDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
             m_world.SetDebugDraw(dbgDraw);
         }
+
+        public function CalculateBezierPoint(t:Number,p0:Number,p1:Number):b2Vec2
+            {
+                var u:Number = 1-t;
+                var tt:Number = t*t;
+                var uu:Number = u*u;
+                var uuu:Number = uu * u;
+                var ttt:Number = tt * t;
+
+                var p:b2Vec2 = new b2Vec2(uuu * p0,(3 * uu * t * p1)+(uuu * p0)); //first term
+                //p += 3 * uu * t * p1; //second term
+                //p += 3 * u * tt * p2; //third term
+                //p += ttt * p3; //fourth term
+
+                return p;
+            }
+
     }
 }
