@@ -23,9 +23,6 @@ package
 
         public var swimmer:FlxSprite;
         public var wheelBody:b2Body;
-        public var waveBody:b2Body;
-        public var waveFixtureDef:b2FixtureDef;
-        public var waveFixture:b2Fixture;
         public var wheelBodyDef:b2BodyDef;
         public var circleShape:b2CircleShape;
         public var wheelFixtureDef:b2FixtureDef;
@@ -35,8 +32,18 @@ package
         public var groundShape:b2PolygonShape;
         public var groundFixtureDef:b2FixtureDef;
         public var groundFixture:b2Fixture;
+
         public var waveBodyDef:b2BodyDef;
         public var waveShape:b2PolygonShape;
+        public var waveBody:b2Body;
+        public var waveFixtureDef:b2FixtureDef;
+        public var waveFixture:b2Fixture;
+
+        public var goalBodyDef:b2BodyDef;
+        public var goalShape:b2PolygonShape;
+        public var goalBody:b2Body;
+        public var goalFixtureDef:b2FixtureDef;
+        public var goalFixture:b2Fixture;
 
         public var wheel_pos:b2Vec2;
         public var wave_pos:b2Vec2;
@@ -48,6 +55,8 @@ package
         public static const PHYS_SCALE:Number = 30;
 
         public var swimmerCollision:SwimmerContactListener;
+
+        public var ridingwave:Boolean = false;
 
 
         override public function create():void
@@ -72,9 +81,9 @@ package
 
             wheelBodyDef = new b2BodyDef();
             wheelBodyDef.type = b2Body.b2_dynamicBody;
-            wheelBodyDef.position.Set(800/PHYS_SCALE, 0);
+            wheelBodyDef.position.Set(800/PHYS_SCALE, 400/PHYS_SCALE);
             wheelBody = m_world.CreateBody(wheelBodyDef);
-            circleShape = new b2CircleShape(1);
+            circleShape = new b2CircleShape(.3);
             wheelFixtureDef = new b2FixtureDef();
             wheelFixtureDef.shape = circleShape;
             wheelBody.SetUserData("swimmer");
@@ -83,6 +92,7 @@ package
             wheelFixtureDef.isSensor = false;
 
             waveBodyDef = new b2BodyDef();
+            waveBodyDef.type = b2Body.b2_dynamicBody;
             waveBodyDef.position.Set(50/PHYS_SCALE, FlxG.height/PHYS_SCALE);
             waveBody = m_world.CreateBody(waveBodyDef);
             waveShape = new b2PolygonShape();
@@ -93,6 +103,18 @@ package
             waveFixtureDef.isSensor = true;
             waveBody.CreateFixture(waveFixtureDef);
             waveFixtureDef.isSensor = false;
+
+            goalBodyDef = new b2BodyDef();
+            goalBodyDef.position.Set(640/PHYS_SCALE, FlxG.height/PHYS_SCALE);
+            goalBody = m_world.CreateBody(goalBodyDef);
+            goalShape = new b2PolygonShape();
+            goalShape.SetAsBox(10/PHYS_SCALE, FlxG.height/PHYS_SCALE);
+            goalFixtureDef = new b2FixtureDef();
+            goalFixtureDef.shape = goalShape;
+            goalBody.SetUserData("goal");
+            goalFixtureDef.isSensor = true;
+            goalBody.CreateFixture(goalFixtureDef);
+            goalFixtureDef.isSensor = false;
 
             //wheel
             var md:b2MouseJointDef = new b2MouseJointDef();
@@ -124,6 +146,12 @@ package
             wheel_pos = wheelBody.GetPosition();
             wave_pos = waveBody.GetPosition();
 
+            if(wheel_pos.x < 100/PHYS_SCALE){
+                ridingwave = true;
+            }
+
+            debugText.text = waveBody.GetUserData().toString();
+
             //setup with m_mousejoin
             if(wheel_pos.x > 640/PHYS_SCALE){
                 wheelBody.SetPosition(new b2Vec2((640/PHYS_SCALE)-100/PHYS_SCALE,wheel_pos.y));
@@ -145,10 +173,10 @@ package
             }
 
             if(wave_pos.x > (640+wave_width)/PHYS_SCALE){
-                waveBody.SetPosition(new b2Vec2(50/PHYS_SCALE, FlxG.height/PHYS_SCALE));
+                waveBody.SetPosition(new b2Vec2(-wave_width/PHYS_SCALE, FlxG.height/PHYS_SCALE));
             }
 
-            wave_pos.x += .1;
+            wave_pos.x += .2;
             w_mouseJoint.SetTarget(new b2Vec2(wave_pos.x,FlxG.height/PHYS_SCALE));
         }
 
