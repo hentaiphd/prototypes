@@ -18,10 +18,18 @@ package
             var fixtureB:b2Fixture = contact.GetFixtureB();
             var bodyA:b2Body = fixtureA.GetBody();
             var bodyB:b2Body = fixtureB.GetBody();
-            var force:b2Vec2 = new b2Vec2(50,50);
+            var force:b2Vec2 = new b2Vec2(20,20);
 
-            bodyA.ApplyForce(force, new b2Vec2(0,0));
-            bodyB.ApplyForce(force, new b2Vec2(0,0));
+            if(bodyA.GetUserData().toString() == "swimmer" || bodyB.GetUserData().toString() == "swimmer"){
+                if(bodyB.GetUserData().toString() == "floor" || bodyA.GetUserData().toString() == "floor"){
+                    var lose:FlxText = new FlxText(100,100,100,"LOSE");
+                    FlxG.state.add(lose);
+                }
+                if(bodyB.GetUserData().toString() == "wave" || bodyA.GetUserData().toString() == "wave"){
+                    bodyA.ApplyForce(force, new b2Vec2(0,0));
+                    bodyB.ApplyForce(force, new b2Vec2(0,0));
+                }
+            }
         }
 
         override public function EndContact(contact:b2Contact):void

@@ -38,7 +38,12 @@ package
         public var waveBodyDef:b2BodyDef;
         public var waveShape:b2PolygonShape;
 
+        public var wheel_pos:b2Vec2;
+        public var wave_pos:b2Vec2;
+        public var wave_width:Number = 150;
+
         public var m_mouseJoint:b2MouseJoint;
+        public var w_mouseJoint:b2MouseJoint;
 
         public static const PHYS_SCALE:Number = 30;
 
@@ -60,7 +65,10 @@ package
             groundShape.SetAsBox((FlxG.width*2)/PHYS_SCALE, (FlxG.height/2)/PHYS_SCALE);
             groundFixtureDef = new b2FixtureDef();
             groundFixtureDef.shape = groundShape;
+            groundBody.SetUserData("floor");
+            groundFixtureDef.isSensor = true;
             groundFixture = groundBody.CreateFixture(groundFixtureDef);
+            groundFixtureDef.isSensor = false;
 
             wheelBodyDef = new b2BodyDef();
             wheelBodyDef.type = b2Body.b2_dynamicBody;
@@ -68,12 +76,8 @@ package
             wheelBody = m_world.CreateBody(wheelBodyDef);
             circleShape = new b2CircleShape(1);
             wheelFixtureDef = new b2FixtureDef();
-            //var filterData:b2FilterData = new b2FilterData();
-            //filterData.maskBits = 0xFFFF;
-            //filterData.categoryBits = 0x0001;
-            //wheelFixtureDef.filter = filterData;
             wheelFixtureDef.shape = circleShape;
-            wheelFixtureDef.userData = "swimmer";
+            wheelBody.SetUserData("swimmer");
             wheelFixtureDef.isSensor = true;
             wheelFixture = wheelBody.CreateFixture(wheelFixtureDef);
             wheelFixtureDef.isSensor = false;
@@ -82,18 +86,15 @@ package
             waveBodyDef.position.Set(50/PHYS_SCALE, FlxG.height/PHYS_SCALE);
             waveBody = m_world.CreateBody(waveBodyDef);
             waveShape = new b2PolygonShape();
-            waveShape.SetAsBox(FlxG.width/PHYS_SCALE, (FlxG.height/2)/PHYS_SCALE);
+            waveShape.SetAsBox(wave_width/PHYS_SCALE, (FlxG.height/2)/PHYS_SCALE);
             waveFixtureDef = new b2FixtureDef();
-            //filterData = new b2FilterData();
-            //filterData.maskBits = 0xFFFF;
-            //filterData.categoryBits = 0x001;
-            //waveFixtureDef.filter = filterData;
             waveFixtureDef.shape = waveShape;
-            waveFixtureDef.userData = "swimmer";
+            waveBody.SetUserData("wave");
             waveFixtureDef.isSensor = true;
             waveBody.CreateFixture(waveFixtureDef);
             waveFixtureDef.isSensor = false;
 
+            //wheel
             var md:b2MouseJointDef = new b2MouseJointDef();
             md.bodyA = groundBody;
             md.bodyB = wheelBody;
@@ -101,6 +102,15 @@ package
             md.collideConnected = true;
             md.maxForce = 30;
             m_mouseJoint = m_world.CreateJoint(md) as b2MouseJoint;
+
+            //wave
+            var mw:b2MouseJointDef = new b2MouseJointDef();
+            mw.bodyA = groundBody;
+            mw.bodyB = waveBody;
+            mw.target.Set(waveBody.GetPosition().x, waveBody.GetPosition().y);
+            mw.collideConnected = true;
+            mw.maxForce = 30;
+            w_mouseJoint = m_world.CreateJoint(mw) as b2MouseJoint;
 
         }
 
@@ -111,27 +121,35 @@ package
             m_world.Step(1.0/30.0, 10, 10);
             m_world.DrawDebugData();
 
-            var this_pos:b2Vec2 = wheelBody.GetPosition();
+            wheel_pos = wheelBody.GetPosition();
+            wave_pos = waveBody.GetPosition();
 
-            if(this_pos.x > 900/PHYS_SCALE){
-                wheelBody.SetPosition(new b2Vec2(FlxG.width/PHYS_SCALE,this_pos.y));
+            //setup with m_mousejoin
+            if(wheel_pos.x > 640/PHYS_SCALE){
+                wheelBody.SetPosition(new b2Vec2((640/PHYS_SCALE)-100/PHYS_SCALE,wheel_pos.y));
             }
-            if(this_pos.x < 0){
-                wheelBody.SetPosition(new b2Vec2(0,this_pos.y));
+            if(wheel_pos.x < 0){
+                wheelBody.SetPosition(new b2Vec2(0,wheel_pos.y));
             }
-            if(this_pos.y > 500/PHYS_SCALE){
-                wheelBody.SetPosition(new b2Vec2(this_pos.x,500/PHYS_SCALE));
+            if(wheel_pos.y > 500/PHYS_SCALE){
+                wheelBody.SetPosition(new b2Vec2(wheel_pos.x,500/PHYS_SCALE));
             }
-            if(this_pos.y < 0){
-                wheelBody.SetPosition(new b2Vec2(this_pos.x,0));
+            if(wheel_pos.y < 0){
+                wheelBody.SetPosition(new b2Vec2(wheel_pos.x,0));
             }
 
             if(FlxG.mouse.pressed()){
-                m_mouseJoint.SetTarget(new b2Vec2(this_pos.x,this_pos.y+1));
+                m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x,wheel_pos.y+1));
             } else {
-                m_mouseJoint.SetTarget(new b2Vec2(this_pos.x-.1,this_pos.y-.1));
+                m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x-.1,wheel_pos.y-.1));
             }
 
+            if(wave_pos.x > (640+wave_width)/PHYS_SCALE){
+                waveBody.SetPosition(new b2Vec2(50/PHYS_SCALE, FlxG.height/PHYS_SCALE));
+            }
+
+            wave_pos.x += .1;
+            w_mouseJoint.SetTarget(new b2Vec2(wave_pos.x,FlxG.height/PHYS_SCALE));
         }
 
         private function setupWorld():void{
