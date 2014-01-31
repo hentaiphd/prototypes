@@ -18,12 +18,11 @@ package
             var fixtureB:b2Fixture = contact.GetFixtureB();
             var bodyA:b2Body = fixtureA.GetBody();
             var bodyB:b2Body = fixtureB.GetBody();
-            var force:b2Vec2 = new b2Vec2(10,10);
+            var force:b2Vec2 = new b2Vec2(15,15);
 
             if(bodyA.GetUserData().toString() == "swimmer" || bodyB.GetUserData().toString() == "swimmer"){
                 if(bodyB.GetUserData().toString() == "floor" || bodyA.GetUserData().toString() == "floor"){
-                    var lose:FlxText = new FlxText(100,100,100,"LOSE");
-                    FlxG.state.add(lose);
+                    FlxG.switchState(new MenuState());
                 }
                 if(bodyB.GetUserData().toString() == "wave" || bodyA.GetUserData().toString() == "wave"){
                     if(bodyA.GetUserData().toString() == "swimmer"){
