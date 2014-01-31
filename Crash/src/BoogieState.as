@@ -60,10 +60,16 @@ package
         public var swimmerCollision:SwimmerContactListener;
         public var start_x:Number;
 
+        public var s:FlxText = new FlxText(100,100,100,"");
+        public var w:FlxText = new FlxText(100,200,100,"");
+
         override public function create():void
         {
             debugText = new FlxText(10, 30, FlxG.width, "boogie");
             add(debugText);
+
+            this.add(s);
+            this.add(w);
 
             //FlxG.bgColor = 0xff783629;
             setupWorld();
@@ -161,6 +167,7 @@ package
             swim_pos = swimBody.GetPosition();
 
             var r:Number = Math.random()*200;
+            var r_wave:Number = Math.random()*30;
 
             if(FlxG.mouse.pressed()){
                 m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x,swim_pos.y-.3));
@@ -168,6 +175,15 @@ package
                 m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+1,swim_pos.y+.4));
             } else {
                 m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-1,swim_pos.y+.4));
+            }
+
+            s.text = "start "+((400/PHYS_SCALE)+(1/PHYS_SCALE)).toString();
+            w.text = "wave y "+wave1_pos.y.toString();
+
+            if(wave1_pos.y > (400/PHYS_SCALE)+(r_wave/PHYS_SCALE)){
+                w1_mouseJoint.SetTarget(new b2Vec2(wave1_pos.x,wave1_pos.y-.1));
+            } else {
+                w1_mouseJoint.SetTarget(new b2Vec2(wave1_pos.x,wave1_pos.y+.1));
             }
         }
 
