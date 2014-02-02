@@ -14,6 +14,10 @@ package
 
     public class PlayState extends FlxState
     {
+        [Embed(source="../assets/swimming.png")] private var Swimmer:Class;
+        [Embed(source="../assets/bg.png")] private var Bg:Class;
+        [Embed(source="../assets/wave.png")] private var Wave:Class;
+
         public var m_physScale:Number = 30;
         public var m_world:b2World;
 
@@ -59,14 +63,22 @@ package
 
         public var ridingwave:Boolean = false;
 
+        public var swim_sprite:FlxSprite;
+        public var bg_sprite:FlxSprite;
+        public var wave_sprite:FlxSprite;
+
 
         override public function create():void
         {
             debugText = new FlxText(10, 30, FlxG.width, "");
             add(debugText);
 
-            FlxG.bgColor = 0xff783629;
+            //FlxG.bgColor = 0xff783629;
             setupWorld();
+
+            bg_sprite = new FlxSprite(0,0);
+            bg_sprite.loadGraphic(Bg,false,false,532,432);
+            FlxG.state.add(bg_sprite);
 
             groundBodyDef = new b2BodyDef();
             groundBodyDef.position.Set(100/PHYS_SCALE, (FlxG.height*2.5)/PHYS_SCALE);
@@ -92,6 +104,15 @@ package
             wheelFixture = wheelBody.CreateFixture(wheelFixtureDef);
             wheelFixtureDef.isSensor = false;
 
+            wheel_pos = wheelBody.GetPosition();
+
+            swim_sprite = new FlxSprite(wheel_pos.x,wheel_pos.y);
+            swim_sprite.loadGraphic(Swimmer, true, true, 192/6, 32, true);
+            swim_sprite.addAnimation("left", [0, 1, 2], 12, true);
+            swim_sprite.addAnimation("right", [3, 4, 5], 12, true);
+            swim_sprite.play("left");
+            FlxG.state.add(swim_sprite);
+
             waveBodyDef = new b2BodyDef();
             waveBodyDef.type = b2Body.b2_dynamicBody;
             waveBodyDef.position.Set(50/PHYS_SCALE, FlxG.height/PHYS_SCALE);
@@ -104,6 +125,10 @@ package
             waveFixtureDef.isSensor = true;
             waveBody.CreateFixture(waveFixtureDef);
             waveFixtureDef.isSensor = false;
+
+            wave_sprite = new FlxSprite(waveBody.GetPosition().x,waveBody.GetPosition().y);
+            wave_sprite.loadGraphic(Wave,false,true,229,196);
+            FlxG.state.add(wave_sprite);
 
             goalBodyDef = new b2BodyDef();
             goalBodyDef.position.Set(640/PHYS_SCALE, FlxG.height/PHYS_SCALE);
@@ -142,10 +167,18 @@ package
             super.update();
 
             m_world.Step(1.0/30.0, 10, 10);
-            m_world.DrawDebugData();
+            //m_world.DrawDebugData();
 
             wheel_pos = wheelBody.GetPosition();
             wave_pos = waveBody.GetPosition();
+
+            swim_sprite.x = (wheel_pos.x * m_physScale / 2) - swim_sprite.width/2;
+            swim_sprite.y = (wheel_pos.y * m_physScale / 2) - swim_sprite.height/2;
+            swim_sprite.angle = wheelBody.GetAngle() * (180 / Math.PI);
+
+            wave_sprite.x = (wave_pos.x * m_physScale / 2) - wave_sprite.width/2;
+            wave_sprite.y = (wave_pos.y * m_physScale / 2) - wave_sprite.height/2;
+            wave_sprite.angle = waveBody.GetAngle() * (180 / Math.PI);
 
             if(!ridingwave){
                 if(wheel_pos.x > 100/PHYS_SCALE){
@@ -156,6 +189,7 @@ package
                     }
                 } else {
                     ridingwave = true;
+                    swim_sprite.play("right");
                 }
             }
 

@@ -14,6 +14,10 @@ package
 
     public class BoogieState extends FlxState
     {
+        [Embed(source="../assets/boarding.png")] private var Swimmer:Class;
+        [Embed(source="../assets/bg.png")] private var Bg:Class;
+        [Embed(source="../assets/wave.png")] private var Wave:Class;
+
         public var m_physScale:Number = 30;
         public var m_world:b2World;
 
@@ -67,6 +71,11 @@ package
         public var time_sec:Number = 0;
         public var time_frame:Number = 0;
 
+        public var swim_sprite:FlxSprite;
+        public var bg_sprite:FlxSprite;
+        public var wave1_sprite:FlxSprite;
+        public var wave2_sprite:FlxSprite;
+
         override public function create():void
         {
             debugText = new FlxText(10, 30, FlxG.width, "boogie");
@@ -75,10 +84,14 @@ package
             this.add(s);
             this.add(w);
 
-            FlxG.bgColor = 0xff783629;
+            //FlxG.bgColor = 0xff783629;
             setupWorld();
 
             start_x = 300/PHYS_SCALE;
+
+            bg_sprite = new FlxSprite(0,0);
+            bg_sprite.loadGraphic(Bg,false,false,532,432);
+            FlxG.state.add(bg_sprite);
 
             groundBodyDef = new b2BodyDef();
             groundBodyDef.position.Set(100/PHYS_SCALE, (FlxG.height*2.5)/PHYS_SCALE);
@@ -104,6 +117,12 @@ package
             swimFixture = swimBody.CreateFixture(swimFixtureDef);
             swimFixtureDef.isSensor = false;
 
+            swim_sprite = new FlxSprite(swimBody.GetPosition().x,swimBody.GetPosition().y);
+            swim_sprite.loadGraphic(Swimmer, true, true, 87/3, 32, true);
+            swim_sprite.addAnimation("swim", [0, 1, 2], 12, true);
+            swim_sprite.play("swim");
+            FlxG.state.add(swim_sprite);
+
             wave1BodyDef = new b2BodyDef();
             wave1BodyDef.type = b2Body.b2_dynamicBody;
             wave1BodyDef.position.Set(100/PHYS_SCALE, 400/PHYS_SCALE);
@@ -117,6 +136,10 @@ package
             wave1Body.CreateFixture(wave1FixtureDef);
             wave1FixtureDef.isSensor = false;
 
+            wave1_sprite = new FlxSprite(wave1Body.GetPosition().x,wave1Body.GetPosition().y);
+            wave1_sprite.loadGraphic(Wave,false,true,229,196);
+            FlxG.state.add(wave1_sprite);
+
             wave2BodyDef = new b2BodyDef();
             wave2BodyDef.type = b2Body.b2_dynamicBody;
             wave2BodyDef.position.Set(550/PHYS_SCALE, 400/PHYS_SCALE);
@@ -129,6 +152,10 @@ package
             wave2FixtureDef.isSensor = true;
             wave2Body.CreateFixture(wave2FixtureDef);
             wave2FixtureDef.isSensor = false;
+
+            wave2_sprite = new FlxSprite(wave2Body.GetPosition().x,wave2Body.GetPosition().y);
+            wave2_sprite.loadGraphic(Wave,false,true,229,196);
+            FlxG.state.add(wave2_sprite);
 
             //swim
             var md:b2MouseJointDef = new b2MouseJointDef();
@@ -170,11 +197,23 @@ package
             }
 
             m_world.Step(1.0/30.0, 10, 10);
-            m_world.DrawDebugData();
+            //m_world.DrawDebugData();
 
             wave1_pos = wave1Body.GetPosition();
             wave2_pos = wave2Body.GetPosition();
             swim_pos = swimBody.GetPosition();
+
+            wave1_sprite.x = (wave1_pos.x * m_physScale / 2) - wave1_sprite.width/2;
+            wave1_sprite.y = (wave1_pos.y * m_physScale / 2) - wave1_sprite.height/2;
+            wave1_sprite.angle = wave1Body.GetAngle() * (180 / Math.PI);
+
+            wave2_sprite.x = (wave2_pos.x * m_physScale / 2) - wave2_sprite.width/2;
+            wave2_sprite.y = (wave2_pos.y * m_physScale / 2) - wave2_sprite.height/2;
+            wave2_sprite.angle = wave2Body.GetAngle() * (180 / Math.PI);
+
+            swim_sprite.x = (swim_pos.x * m_physScale / 2) - swim_sprite.width/2;
+            swim_sprite.y = (swim_pos.y * m_physScale / 2) - swim_sprite.height/2;
+            swim_sprite.angle = swimBody.GetAngle() * (180 / Math.PI);
 
             var r:Number = Math.random()*200;
             var r_wave:Number = Math.random()*200;
@@ -200,7 +239,7 @@ package
                     m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-1,swim_pos.y+.7));
                 }
             } else {
-                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-1,swim_pos.y+.2));
+                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-1,swim_pos.y+.09));
             }
 
             if(wave1_pos.y > (300/PHYS_SCALE)+(r_wave/PHYS_SCALE)){
