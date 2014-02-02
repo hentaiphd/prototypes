@@ -18,7 +18,7 @@ package
             var fixtureB:b2Fixture = contact.GetFixtureB();
             var bodyA:b2Body = fixtureA.GetBody();
             var bodyB:b2Body = fixtureB.GetBody();
-            var force:b2Vec2 = new b2Vec2(15,15);
+            var force:b2Vec2 = new b2Vec2(30,0);
 
             if(bodyA.GetUserData().toString() == "swimmer" || bodyB.GetUserData().toString() == "swimmer"){
                 if(bodyB.GetUserData().toString() == "floor" || bodyA.GetUserData().toString() == "floor"){
@@ -31,9 +31,20 @@ package
                         bodyB.ApplyForce(force, new b2Vec2(0,0));
                     }
                 }
-                if(bodyA.GetUserData().toString() == "goal" || bodyA.GetUserData().toString() == "goal"){
-                    var win:FlxText = new FlxText(100,100,100,"WIN");
-                    FlxG.state.add(win);
+                if(bodyA.GetUserData().toString() == "boogie_wave" || bodyA.GetUserData().toString() == "boogie_wave"){
+                    var lose:FlxText = new FlxText(100,100,100,"LOSE");
+                    FlxG.state.add(lose);
+                    FlxG.switchState(new MenuState());
+                }
+            }
+
+            if(bodyA.GetUserData().toString() == "swimmer_win" || bodyB.GetUserData().toString() == "swimmer_win"){
+                if(bodyB.GetUserData().toString() == "wave" || bodyA.GetUserData().toString() == "wave"){
+                    if(bodyA.GetUserData().toString() == "swimmer_win"){
+                        bodyA.ApplyForce(force, new b2Vec2(0,0));
+                    } else {
+                        bodyB.ApplyForce(force, new b2Vec2(0,0));
+                    }
                 }
             }
         }

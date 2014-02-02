@@ -27,6 +27,7 @@ package
         public var circleShape:b2CircleShape;
         public var wheelFixtureDef:b2FixtureDef;
         public var wheelFixture:b2Fixture;
+
         public var groundBodyDef:b2BodyDef;
         public var groundBody:b2Body;
         public var groundShape:b2PolygonShape;
@@ -64,7 +65,7 @@ package
             debugText = new FlxText(10, 30, FlxG.width, "");
             add(debugText);
 
-            //FlxG.bgColor = 0xff783629;
+            FlxG.bgColor = 0xff783629;
             setupWorld();
 
             groundBodyDef = new b2BodyDef();
@@ -146,11 +147,25 @@ package
             wheel_pos = wheelBody.GetPosition();
             wave_pos = waveBody.GetPosition();
 
-            if(wheel_pos.x < 100/PHYS_SCALE){
-                ridingwave = true;
+            if(wheel_pos.x > 500/PHYS_SCALE){
+                var boogie_cut:TextState = new TextState("DON'T FALL OFF YOUR BOARD BB",new BoogieState());
             }
 
-            debugText.text = waveBody.GetUserData().toString();
+            if(wheel_pos.x > 100/PHYS_SCALE){
+                if(FlxG.keys.SPACE){
+                    m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x,wheel_pos.y+1));
+                } else {
+                    m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x-.1,wheel_pos.y-.1));
+                }
+            } else {
+                wheelBody.SetUserData("swimmer_win");
+                debugText.text = "CATCH THE WAVEEZZZ";
+                if(FlxG.keys.SPACE){
+                    m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x,wheel_pos.y-.1));
+                } else {
+                    m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x+.1,wheel_pos.y+.1));
+                }
+            }
 
             //setup with m_mousejoin
             if(wheel_pos.x > 640/PHYS_SCALE){
@@ -164,12 +179,6 @@ package
             }
             if(wheel_pos.y < 0){
                 wheelBody.SetPosition(new b2Vec2(wheel_pos.x,0));
-            }
-
-            if(FlxG.mouse.pressed()){
-                m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x,wheel_pos.y+1));
-            } else {
-                m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x-.1,wheel_pos.y-.1));
             }
 
             if(wave_pos.x > (640+wave_width)/PHYS_SCALE){

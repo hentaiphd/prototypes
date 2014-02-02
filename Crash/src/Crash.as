@@ -6,7 +6,7 @@ package{
     public class Crash extends FlxGame{
 
         public function Crash(){
-            super(320,240,BoogieState,2);
+            super(320,240,MenuState,2);
         }
     }
 }

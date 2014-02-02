@@ -10,6 +10,8 @@ package{
             t.alignment = "center";
             t.color = 0xf9d0b4;
             add(t);
+
+            FlxG.bgColor = 0xff783629;
         }
 
         override public function update():void{

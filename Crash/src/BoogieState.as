@@ -63,6 +63,10 @@ package
         public var s:FlxText = new FlxText(100,100,100,"");
         public var w:FlxText = new FlxText(100,200,100,"");
 
+        public var stamina:Number = 600;
+        public var time_sec:Number = 0;
+        public var time_frame:Number = 0;
+
         override public function create():void
         {
             debugText = new FlxText(10, 30, FlxG.width, "boogie");
@@ -71,7 +75,7 @@ package
             this.add(s);
             this.add(w);
 
-            //FlxG.bgColor = 0xff783629;
+            FlxG.bgColor = 0xff783629;
             setupWorld();
 
             start_x = 300/PHYS_SCALE;
@@ -108,7 +112,7 @@ package
             wave1Shape.SetAsBox(wave_width/PHYS_SCALE, (FlxG.height/2)/PHYS_SCALE);
             wave1FixtureDef = new b2FixtureDef();
             wave1FixtureDef.shape = wave1Shape;
-            wave1Body.SetUserData("wave");
+            wave1Body.SetUserData("boogie_wave");
             wave1FixtureDef.isSensor = true;
             wave1Body.CreateFixture(wave1FixtureDef);
             wave1FixtureDef.isSensor = false;
@@ -121,7 +125,7 @@ package
             wave2Shape.SetAsBox(wave_width/PHYS_SCALE, (FlxG.height/2)/PHYS_SCALE);
             wave2FixtureDef = new b2FixtureDef();
             wave2FixtureDef.shape = wave2Shape;
-            wave2Body.SetUserData("wave");
+            wave2Body.SetUserData("boogie_wave");
             wave2FixtureDef.isSensor = true;
             wave2Body.CreateFixture(wave2FixtureDef);
             wave2FixtureDef.isSensor = false;
@@ -158,6 +162,12 @@ package
         override public function update():void
         {
             super.update();
+            debugText.text = "stamina: " + stamina.toString() + "time_sec: " + time_sec.toString();
+
+            time_frame++;
+            if(time_frame%100 == 0){
+                time_sec++;
+            }
 
             m_world.Step(1.0/30.0, 10, 10);
             m_world.DrawDebugData();
@@ -167,23 +177,41 @@ package
             swim_pos = swimBody.GetPosition();
 
             var r:Number = Math.random()*200;
-            var r_wave:Number = Math.random()*30;
+            var r_wave:Number = Math.random()*200;
+            var l_wave:Number = Math.random()*200;
 
-            if(FlxG.mouse.pressed()){
-                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x,swim_pos.y-.3));
+            if(time_sec == 10){
+                debugText.text = "WIN";
+                FlxG.switchState(new MenuState());
+            }
+
+            if(FlxG.keys.SPACE){
+                if(stamina > 0){
+                    stamina -= 1;
+                    m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x,swim_pos.y-.3));
+                } else {
+                    m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-1,swim_pos.y+.7));
+                }
             } else if(swim_pos.x < start_x+(r/PHYS_SCALE)){
-                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+1,swim_pos.y+.4));
+                if(stamina > 0){
+                    m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+1,swim_pos.y+.4));
+                } else {
+                    m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-1,swim_pos.y+.7));
+                }
             } else {
                 m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-1,swim_pos.y+.4));
             }
 
-            s.text = "start "+((400/PHYS_SCALE)+(1/PHYS_SCALE)).toString();
-            w.text = "wave y "+wave1_pos.y.toString();
-
-            if(wave1_pos.y > (400/PHYS_SCALE)+(r_wave/PHYS_SCALE)){
+            if(wave1_pos.y > (300/PHYS_SCALE)+(r_wave/PHYS_SCALE)){
                 w1_mouseJoint.SetTarget(new b2Vec2(wave1_pos.x,wave1_pos.y-.1));
             } else {
                 w1_mouseJoint.SetTarget(new b2Vec2(wave1_pos.x,wave1_pos.y+.1));
+            }
+
+            if(wave2_pos.y > (300/PHYS_SCALE)+(l_wave/PHYS_SCALE)){
+                w2_mouseJoint.SetTarget(new b2Vec2(wave2_pos.x,wave2_pos.y-.1));
+            } else {
+                w2_mouseJoint.SetTarget(new b2Vec2(wave2_pos.x,wave2_pos.y+.1));
             }
         }
 
