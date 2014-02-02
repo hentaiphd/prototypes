@@ -181,8 +181,7 @@ package
             var l_wave:Number = Math.random()*200;
 
             if(time_sec == 10){
-                debugText.text = "WIN";
-                FlxG.switchState(new MenuState());
+                FlxG.switchState(new TextState("WINNING",new MenuState()));
             }
 
             if(FlxG.keys.SPACE){
@@ -192,6 +191,8 @@ package
                 } else {
                     m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-1,swim_pos.y+.7));
                 }
+            } else if(time_sec < 1) {
+                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-.01,swim_pos.y-.01));
             } else if(swim_pos.x < start_x+(r/PHYS_SCALE)){
                 if(stamina > 0){
                     m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+1,swim_pos.y+.4));
@@ -199,7 +200,7 @@ package
                     m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-1,swim_pos.y+.7));
                 }
             } else {
-                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-1,swim_pos.y+.4));
+                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-1,swim_pos.y+.2));
             }
 
             if(wave1_pos.y > (300/PHYS_SCALE)+(r_wave/PHYS_SCALE)){
