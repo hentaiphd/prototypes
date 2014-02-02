@@ -147,23 +147,30 @@ package
             wheel_pos = wheelBody.GetPosition();
             wave_pos = waveBody.GetPosition();
 
-            if(wheel_pos.x > 500/PHYS_SCALE){
-                var boogie_cut:TextState = new TextState("DON'T FALL OFF YOUR BOARD BB",new BoogieState());
+            if(!ridingwave){
+                if(wheel_pos.x > 100/PHYS_SCALE){
+                    if(FlxG.keys.SPACE){
+                        m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x,wheel_pos.y+1));
+                    } else {
+                        m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x-.1,wheel_pos.y-.1));
+                    }
+                } else {
+                    ridingwave = true;
+                }
             }
 
-            if(wheel_pos.x > 100/PHYS_SCALE){
-                if(FlxG.keys.SPACE){
-                    m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x,wheel_pos.y+1));
-                } else {
-                    m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x-.1,wheel_pos.y-.1));
-                }
-            } else {
+            debugText.text = wheel_pos.x.toString();
+
+            if(ridingwave) {
                 wheelBody.SetUserData("swimmer_win");
                 debugText.text = "CATCH THE WAVEEZZZ";
                 if(FlxG.keys.SPACE){
-                    m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x,wheel_pos.y-.1));
+                    m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x+.4,wheel_pos.y-.1));
                 } else {
-                    m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x+.1,wheel_pos.y+.1));
+                    m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x+.1,wheel_pos.y-.1));
+                }
+                if(wheel_pos.x > 16){
+                    FlxG.switchState(new TextState("DON'T FALL OFF YOUR BOARD BB",new BoogieState()));
                 }
             }
 
