@@ -67,6 +67,8 @@ package
         public var bg_sprite:FlxSprite;
         public var wave_sprite:FlxSprite;
 
+        public var distance:FlxText;
+
 
         override public function create():void
         {
@@ -79,6 +81,9 @@ package
             bg_sprite = new FlxSprite(0,0);
             bg_sprite.loadGraphic(Bg,false,false,532,432);
             FlxG.state.add(bg_sprite);
+
+            distance = new FlxText(30,30,100,(100/PHYS_SCALE).toString() + " more feet to catch a wave!");
+            FlxG.state.add(distance);
 
             groundBodyDef = new b2BodyDef();
             groundBodyDef.position.Set(100/PHYS_SCALE, (FlxG.height*2.5)/PHYS_SCALE);
@@ -106,13 +111,6 @@ package
 
             wheel_pos = wheelBody.GetPosition();
 
-            swim_sprite = new FlxSprite(wheel_pos.x,wheel_pos.y);
-            swim_sprite.loadGraphic(Swimmer, true, true, 192/6, 32, true);
-            swim_sprite.addAnimation("left", [0, 1, 2], 12, true);
-            swim_sprite.addAnimation("right", [3, 4, 5], 12, true);
-            swim_sprite.play("left");
-            FlxG.state.add(swim_sprite);
-
             waveBodyDef = new b2BodyDef();
             waveBodyDef.type = b2Body.b2_dynamicBody;
             waveBodyDef.position.Set(50/PHYS_SCALE, FlxG.height/PHYS_SCALE);
@@ -129,6 +127,13 @@ package
             wave_sprite = new FlxSprite(waveBody.GetPosition().x,waveBody.GetPosition().y);
             wave_sprite.loadGraphic(Wave,false,true,229,196);
             FlxG.state.add(wave_sprite);
+
+            swim_sprite = new FlxSprite(wheel_pos.x,wheel_pos.y);
+            swim_sprite.loadGraphic(Swimmer, true, true, 192/6, 32, true);
+            swim_sprite.addAnimation("left", [0, 1, 2], 12, true);
+            swim_sprite.addAnimation("right", [3, 4, 5], 12, true);
+            swim_sprite.play("left");
+            FlxG.state.add(swim_sprite);
 
             goalBodyDef = new b2BodyDef();
             goalBodyDef.position.Set(640/PHYS_SCALE, FlxG.height/PHYS_SCALE);
@@ -182,6 +187,7 @@ package
 
             if(!ridingwave){
                 if(wheel_pos.x > 100/PHYS_SCALE){
+                    distance.text = Math.abs(Math.round((100/PHYS_SCALE - wheel_pos.x))).toString() + " more feet to catch a wave!";
                     if(FlxG.keys.SPACE){
                         m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x,wheel_pos.y+1));
                     } else {
@@ -190,6 +196,7 @@ package
                 } else {
                     ridingwave = true;
                     swim_sprite.play("right");
+                    distance.text = "Let's go!";
                 }
             }
 
@@ -204,7 +211,7 @@ package
                     m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x+.1,wheel_pos.y-.1));
                 }
                 if(wheel_pos.x > 16){
-                    FlxG.switchState(new TextState("DON'T FALL OFF YOUR BOARD BB",new BoogieState()));
+                    FlxG.switchState(new TextState("Ride the wave, but don't fall off!",new BoogieState()));
                 }
             }
 

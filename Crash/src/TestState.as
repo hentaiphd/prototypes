@@ -17,6 +17,7 @@ package
 
         override public function create():void
         {
+
             var gravity:b2Vec2 = new b2Vec2(0,9.8);
             m_world = new b2World(gravity,true);
             m_world.SetContactListener(new SwimmerContactListener());

@@ -5,6 +5,8 @@ package
     public class TextState extends TimedState{
         public var _text:String;
         public var nextState:FlxState;
+        public var bg_sprite:FlxSprite;
+        [Embed(source="../assets/bg.png")] private var Bg:Class;
 
         public function TextState(_text:String, next:FlxState) {
             super();
@@ -14,6 +16,11 @@ package
 
         override public function create():void
         {
+
+            bg_sprite = new FlxSprite(0,0);
+            bg_sprite.loadGraphic(Bg,false,false,532,432);
+            FlxG.state.add(bg_sprite);
+
             endTime = 2;
 
             var t:FlxText;

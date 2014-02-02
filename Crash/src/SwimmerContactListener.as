@@ -22,7 +22,7 @@ package
 
             if(bodyA.GetUserData().toString() == "swimmer" || bodyB.GetUserData().toString() == "swimmer"){
                 if(bodyB.GetUserData().toString() == "floor" || bodyA.GetUserData().toString() == "floor"){
-                    FlxG.switchState(new MenuState());
+                    FlxG.switchState(new TextState("You got crushed!",new MenuState()));
                 }
                 if(bodyB.GetUserData().toString() == "wave" || bodyA.GetUserData().toString() == "wave"){
                     if(bodyA.GetUserData().toString() == "swimmer"){
@@ -32,9 +32,7 @@ package
                     }
                 }
                 if(bodyA.GetUserData().toString() == "boogie_wave" || bodyA.GetUserData().toString() == "boogie_wave"){
-                    var lose:FlxText = new FlxText(100,100,100,"LOSE");
-                    FlxG.state.add(lose);
-                    FlxG.switchState(new MenuState());
+                    FlxG.switchState(new TextState("You got crushed!",new MenuState()));
                 }
             }
 

@@ -17,6 +17,7 @@ package
         [Embed(source="../assets/boarding.png")] private var Swimmer:Class;
         [Embed(source="../assets/bg.png")] private var Bg:Class;
         [Embed(source="../assets/wave.png")] private var Wave:Class;
+        [Embed(source="../assets/stamina.png")] private var Stamina:Class;
 
         public var m_physScale:Number = 30;
         public var m_world:b2World;
@@ -75,11 +76,16 @@ package
         public var bg_sprite:FlxSprite;
         public var wave1_sprite:FlxSprite;
         public var wave2_sprite:FlxSprite;
+        public var stamina_sprite:FlxSprite;
+
+        public var stamina_text:FlxText;
+
+        public var distance:FlxText;
 
         override public function create():void
         {
-            debugText = new FlxText(10, 30, FlxG.width, "boogie");
-            add(debugText);
+            //debugText = new FlxText(10, 30, FlxG.width, "boogie");
+            //add(debugText);
 
             this.add(s);
             this.add(w);
@@ -92,6 +98,18 @@ package
             bg_sprite = new FlxSprite(0,0);
             bg_sprite.loadGraphic(Bg,false,false,532,432);
             FlxG.state.add(bg_sprite);
+
+            stamina_sprite = new FlxSprite(100,20);
+            stamina_sprite.loadGraphic(Stamina,true,true,295/5,10,false);
+            stamina_sprite.addAnimation("five", [0], 12, true);
+            stamina_sprite.addAnimation("four", [1], 12, true);
+            stamina_sprite.addAnimation("three", [2], 12, true);
+            stamina_sprite.addAnimation("two", [3], 12, true);
+            stamina_sprite.addAnimation("one", [4], 12, true);
+            stamina_sprite.play("five");
+            stamina_sprite.scale.x = 1;
+            stamina_sprite.scale.y = 1;
+            FlxG.state.add(stamina_sprite);
 
             groundBodyDef = new b2BodyDef();
             groundBodyDef.position.Set(100/PHYS_SCALE, (FlxG.height*2.5)/PHYS_SCALE);
@@ -184,12 +202,18 @@ package
             mw2.maxForce = 30;
             w2_mouseJoint = m_world.CreateJoint(mw2) as b2MouseJoint;
 
+            stamina_text = new FlxText(20,20,200,"Stamina: ");
+            FlxG.state.add(stamina_text);
+
+            distance = new FlxText(20,40,200,"Distance to shore: ");
+            FlxG.state.add(distance);
+
         }
 
         override public function update():void
         {
             super.update();
-            debugText.text = "stamina: " + stamina.toString() + "time_sec: " + time_sec.toString();
+            //debugText.text = "stamina: " + stamina.toString() + "time_sec: " + time_sec.toString();
 
             time_frame++;
             if(time_frame%100 == 0){
@@ -198,6 +222,25 @@ package
 
             m_world.Step(1.0/30.0, 10, 10);
             //m_world.DrawDebugData();
+
+            distance.text = "Distance to shore: " + Math.abs(Math.round(10-time_sec)).toString();
+
+            if(stamina == 0){
+                FlxG.switchState(new TextState("You ran out of energy\n and got crushed!",new MenuState()));
+            }
+
+            if(stamina < 600-200){
+                stamina_sprite.play("four");
+            }
+            if(stamina < 600-300){
+                stamina_sprite.play("three");
+            }
+            if(stamina < 600-400){
+                stamina_sprite.play("two");
+            }
+            if(stamina < 600-500){
+                stamina_sprite.play("one");
+            }
 
             wave1_pos = wave1Body.GetPosition();
             wave2_pos = wave2Body.GetPosition();
@@ -220,7 +263,11 @@ package
             var l_wave:Number = Math.random()*200;
 
             if(time_sec == 10){
-                FlxG.switchState(new TextState("WINNING",new MenuState()));
+                FlxG.switchState(new TextState("You caught a wave!",new MenuState()));
+            }
+
+            if(swim_pos.y < 0){
+                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x,swim_pos.y));
             }
 
             if(FlxG.keys.SPACE){
