@@ -26,11 +26,11 @@ package
         public var debugText:FlxText;
 
         public var swimmer:FlxSprite;
-        public var wheelBody:b2Body;
-        public var wheelBodyDef:b2BodyDef;
+        public var swimBody:b2Body;
+        public var swimBodyDef:b2BodyDef;
         public var circleShape:b2CircleShape;
-        public var wheelFixtureDef:b2FixtureDef;
-        public var wheelFixture:b2Fixture;
+        public var swimFixtureDef:b2FixtureDef;
+        public var swimFixture:b2Fixture;
 
         public var groundBodyDef:b2BodyDef;
         public var groundBody:b2Body;
@@ -50,7 +50,7 @@ package
         public var goalFixtureDef:b2FixtureDef;
         public var goalFixture:b2Fixture;
 
-        public var wheel_pos:b2Vec2;
+        public var swim_pos:b2Vec2;
         public var wave_pos:b2Vec2;
         public var wave_width:Number = 150;
 
@@ -69,6 +69,14 @@ package
 
         public var distance:FlxText;
 
+        public var speed:Number;
+        public var waves_caught:Number;
+
+        public function PlayState(new_speed:Number = .2, waves:Number = 0){
+            speed = new_speed;
+            waves_caught = waves;
+
+        }
 
         override public function create():void
         {
@@ -97,19 +105,19 @@ package
             groundFixture = groundBody.CreateFixture(groundFixtureDef);
             groundFixtureDef.isSensor = false;
 
-            wheelBodyDef = new b2BodyDef();
-            wheelBodyDef.type = b2Body.b2_dynamicBody;
-            wheelBodyDef.position.Set(800/PHYS_SCALE, 400/PHYS_SCALE);
-            wheelBody = m_world.CreateBody(wheelBodyDef);
+            swimBodyDef = new b2BodyDef();
+            swimBodyDef.type = b2Body.b2_dynamicBody;
+            swimBodyDef.position.Set((FlxG.width*2)/PHYS_SCALE, 400/PHYS_SCALE);
+            swimBody = m_world.CreateBody(swimBodyDef);
             circleShape = new b2CircleShape(.3);
-            wheelFixtureDef = new b2FixtureDef();
-            wheelFixtureDef.shape = circleShape;
-            wheelBody.SetUserData("swimmer");
-            wheelFixtureDef.isSensor = true;
-            wheelFixture = wheelBody.CreateFixture(wheelFixtureDef);
-            wheelFixtureDef.isSensor = false;
+            swimFixtureDef = new b2FixtureDef();
+            swimFixtureDef.shape = circleShape;
+            swimBody.SetUserData("swimmer");
+            swimFixtureDef.isSensor = true;
+            swimFixture = swimBody.CreateFixture(swimFixtureDef);
+            swimFixtureDef.isSensor = false;
 
-            wheel_pos = wheelBody.GetPosition();
+            swim_pos = swimBody.GetPosition();
 
             waveBodyDef = new b2BodyDef();
             waveBodyDef.type = b2Body.b2_dynamicBody;
@@ -128,7 +136,7 @@ package
             wave_sprite.loadGraphic(Wave,false,true,229,196);
             FlxG.state.add(wave_sprite);
 
-            swim_sprite = new FlxSprite(wheel_pos.x,wheel_pos.y);
+            swim_sprite = new FlxSprite(swim_pos.x,swim_pos.y);
             swim_sprite.loadGraphic(Swimmer, true, true, 192/6, 32, true);
             swim_sprite.addAnimation("left", [0, 1, 2], 12, true);
             swim_sprite.addAnimation("right", [3, 4, 5], 12, true);
@@ -147,11 +155,11 @@ package
             goalBody.CreateFixture(goalFixtureDef);
             goalFixtureDef.isSensor = false;
 
-            //wheel
+            //swim
             var md:b2MouseJointDef = new b2MouseJointDef();
             md.bodyA = groundBody;
-            md.bodyB = wheelBody;
-            md.target.Set(wheelBody.GetPosition().x, wheelBody.GetPosition().y);
+            md.bodyB = swimBody;
+            md.target.Set(swimBody.GetPosition().x, swimBody.GetPosition().y);
             md.collideConnected = true;
             md.maxForce = 30;
             m_mouseJoint = m_world.CreateJoint(md) as b2MouseJoint;
@@ -174,24 +182,24 @@ package
             m_world.Step(1.0/30.0, 10, 10);
             //m_world.DrawDebugData();
 
-            wheel_pos = wheelBody.GetPosition();
+            swim_pos = swimBody.GetPosition();
             wave_pos = waveBody.GetPosition();
 
-            swim_sprite.x = (wheel_pos.x * m_physScale / 2) - swim_sprite.width/2;
-            swim_sprite.y = (wheel_pos.y * m_physScale / 2) - swim_sprite.height/2;
-            swim_sprite.angle = wheelBody.GetAngle() * (180 / Math.PI);
+            swim_sprite.x = (swim_pos.x * m_physScale / 2) - swim_sprite.width/2;
+            swim_sprite.y = (swim_pos.y * m_physScale / 2) - swim_sprite.height/2;
+            swim_sprite.angle = swimBody.GetAngle() * (180 / Math.PI);
 
             wave_sprite.x = (wave_pos.x * m_physScale / 2) - wave_sprite.width/2;
             wave_sprite.y = (wave_pos.y * m_physScale / 2) - wave_sprite.height/2;
             wave_sprite.angle = waveBody.GetAngle() * (180 / Math.PI);
 
             if(!ridingwave){
-                if(wheel_pos.x > 100/PHYS_SCALE){
-                    distance.text = Math.abs(Math.round((100/PHYS_SCALE - wheel_pos.x))).toString() + " more feet to catch a wave!";
+                if(swim_pos.x > 100/PHYS_SCALE){
+                    distance.text = Math.abs(Math.round((100/PHYS_SCALE - swim_pos.x))).toString() + " more feet to catch a wave!";
                     if(FlxG.keys.SPACE){
-                        m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x,wheel_pos.y+1));
+                        m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x,swim_pos.y+1));
                     } else {
-                        m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x-.1,wheel_pos.y-.1));
+                        m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-.1,swim_pos.y-.1));
                     }
                 } else {
                     ridingwave = true;
@@ -200,47 +208,49 @@ package
                 }
             }
 
-            debugText.text = wheel_pos.x.toString();
+            debugText.text = swim_pos.x.toString();
 
             if(ridingwave) {
-                wheelBody.SetUserData("swimmer_win");
+                swimBody.SetUserData("swimmer_win");
                 debugText.text = "CATCH THE WAVEEZZZ";
                 if(FlxG.keys.SPACE){
-                    m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x+.4,wheel_pos.y-.1));
+                    m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+.4,swim_pos.y-.1));
                 } else {
-                    m_mouseJoint.SetTarget(new b2Vec2(wheel_pos.x+.1,wheel_pos.y-.1));
+                    m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+.1,swim_pos.y-.1));
                 }
-                if(wheel_pos.x > 16){
-                    FlxG.switchState(new TextState("Ride the wave, but don't fall off!",new BoogieState()));
+                if(swim_pos.x > 16){
+                    FlxG.switchState(new TextState("Ride the wave, but don't fall off!",new BoogieState(speed,waves_caught)));
                 }
             }
 
             //setup with m_mousejoin
-            if(wheel_pos.x > 640/PHYS_SCALE){
-                wheelBody.SetPosition(new b2Vec2((640/PHYS_SCALE)-100/PHYS_SCALE,wheel_pos.y));
+            if(swim_pos.x > (FlxG.width*2.1)/PHYS_SCALE){
+                if(!ridingwave){
+                    FlxG.switchState(new TextState("You got crushed!\nYou caught " + waves_caught.toString() + " waves!", new MenuState()));
+                }
             }
-            if(wheel_pos.x < 0){
-                wheelBody.SetPosition(new b2Vec2(0,wheel_pos.y));
+            if(swim_pos.x < 0){
+                swimBody.SetPosition(new b2Vec2(0,swim_pos.y));
             }
-            if(wheel_pos.y > 500/PHYS_SCALE){
-                wheelBody.SetPosition(new b2Vec2(wheel_pos.x,500/PHYS_SCALE));
+            if(swim_pos.y > 500/PHYS_SCALE){
+                swimBody.SetPosition(new b2Vec2(swim_pos.x,500/PHYS_SCALE));
             }
-            if(wheel_pos.y < 0){
-                wheelBody.SetPosition(new b2Vec2(wheel_pos.x,0));
+            if(swim_pos.y < 0){
+                swimBody.SetPosition(new b2Vec2(swim_pos.x,0));
             }
 
             if(wave_pos.x > (640+wave_width)/PHYS_SCALE){
                 waveBody.SetPosition(new b2Vec2(-wave_width/PHYS_SCALE, FlxG.height/PHYS_SCALE));
             }
 
-            wave_pos.x += .2;
+            wave_pos.x += speed;
             w_mouseJoint.SetTarget(new b2Vec2(wave_pos.x,FlxG.height/PHYS_SCALE));
         }
 
         private function setupWorld():void{
             var gravity:b2Vec2 = new b2Vec2(0,9.8);
             m_world = new b2World(gravity,true);
-            swimmerCollision = new SwimmerContactListener();
+            swimmerCollision = new SwimmerContactListener(waves_caught);
             m_world.SetContactListener(swimmerCollision);
 
             var dbgDraw:b2DebugDraw = new b2DebugDraw();

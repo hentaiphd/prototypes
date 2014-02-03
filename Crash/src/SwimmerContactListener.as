@@ -11,6 +11,11 @@ package
 
     public class SwimmerContactListener extends b2ContactListener
     {
+        public var waves_caught:Number;
+
+        public function SwimmerContactListener(waves:Number){
+            waves_caught = waves;
+        }
 
         override public function BeginContact(contact:b2Contact):void
         {
@@ -22,7 +27,7 @@ package
 
             if(bodyA.GetUserData().toString() == "swimmer" || bodyB.GetUserData().toString() == "swimmer"){
                 if(bodyB.GetUserData().toString() == "floor" || bodyA.GetUserData().toString() == "floor"){
-                    FlxG.switchState(new TextState("You got crushed!",new MenuState()));
+                    FlxG.switchState(new TextState("You got crushed!\nYou caught " + waves_caught.toString() + " waves!", new MenuState()));
                 }
                 if(bodyB.GetUserData().toString() == "wave" || bodyA.GetUserData().toString() == "wave"){
                     if(bodyA.GetUserData().toString() == "swimmer"){
@@ -32,7 +37,7 @@ package
                     }
                 }
                 if(bodyA.GetUserData().toString() == "boogie_wave" || bodyA.GetUserData().toString() == "boogie_wave"){
-                    FlxG.switchState(new TextState("You got crushed!",new MenuState()));
+                    FlxG.switchState(new TextState("You got crushed!\nYou caught " + waves_caught.toString() + " waves!", new MenuState()));
                 }
             }
 

@@ -21,7 +21,7 @@ package
             bg_sprite.loadGraphic(Bg,false,false,532,432);
             FlxG.state.add(bg_sprite);
 
-            endTime = 2;
+            endTime = 1;
 
             var t:FlxText;
             t = new FlxText(0,FlxG.height/2-10,FlxG.width,_text);

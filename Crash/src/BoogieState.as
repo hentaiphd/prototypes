@@ -82,6 +82,14 @@ package
 
         public var distance:FlxText;
 
+        public var speed:Number;
+        public var waves_caught:Number;
+
+        public function BoogieState(new_speed:Number, wave:Number){
+            speed = new_speed;
+            waves_caught = wave;
+        }
+
         override public function create():void
         {
             //debugText = new FlxText(10, 30, FlxG.width, "boogie");
@@ -259,11 +267,12 @@ package
             swim_sprite.angle = swimBody.GetAngle() * (180 / Math.PI);
 
             var r:Number = Math.random()*200;
-            var r_wave:Number = Math.random()*200;
-            var l_wave:Number = Math.random()*200;
+            var r_wave:Number = Math.random()*(200 + (200*speed));
+            var l_wave:Number = Math.random()*(200 + (200*speed));
 
             if(time_sec == 10){
-                FlxG.switchState(new TextState("You caught a wave!",new MenuState()));
+                waves_caught += 1;
+                FlxG.switchState(new TextState("That was my " + waves_caught.toString() + " wave!\n I'm gonna catch another!",new PlayState(speed+.1,waves_caught)));
             }
 
             if(swim_pos.y < 0){
@@ -305,7 +314,7 @@ package
         private function setupWorld():void{
             var gravity:b2Vec2 = new b2Vec2(0,9.8);
             m_world = new b2World(gravity,true);
-            swimmerCollision = new SwimmerContactListener();
+            swimmerCollision = new SwimmerContactListener(waves_caught);
             m_world.SetContactListener(swimmerCollision);
 
             var dbgDraw:b2DebugDraw = new b2DebugDraw();
