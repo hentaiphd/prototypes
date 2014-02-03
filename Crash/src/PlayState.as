@@ -212,16 +212,16 @@ package
 
             if(ridingwave) {
                 swimBody.SetUserData("swimmer_win");
-                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+.4,swim_pos.y));
+                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+.4,swim_pos.y-.06));
                 if(swim_pos.x > 16){
-                    FlxG.switchState(new TextState("Ride the wave, but don't fall off!",new BoogieState(speed,waves_caught)));
+                    FlxG.switchState(new TextState("Ride the wave, but don't fall off!",new BoogieState(speed,waves_caught), 2));
                 }
             }
 
             //setup with m_mousejoin
             if(swim_pos.x > (FlxG.width*2.1)/PHYS_SCALE){
                 if(!ridingwave){
-                    FlxG.switchState(new TextState("You got crushed!\nYou caught " + waves_caught.toString() + " waves!", new MenuState()));
+                    FlxG.switchState(new TextState("You got crushed!\nYou caught " + waves_caught.toString() + " waves!", new MenuState(), 1));
                 }
             }
             if(swim_pos.x < 0){

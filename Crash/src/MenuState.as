@@ -14,7 +14,7 @@ package{
             FlxG.state.add(bg_sprite);
 
             var t:FlxText;
-            t = new FlxText(0,FlxG.height/2-30,FlxG.width,"space bar to swim and to play");
+            t = new FlxText(0,FlxG.height/2-30,FlxG.width,"space bar to swim and to play.");
             t.size = 16;
             t.alignment = "center";
             add(t);

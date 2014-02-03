@@ -6,12 +6,14 @@ package
         public var _text:String;
         public var nextState:FlxState;
         public var bg_sprite:FlxSprite;
+        public var timer:Number;
         [Embed(source="../assets/bg.png")] private var Bg:Class;
 
-        public function TextState(_text:String, next:FlxState) {
+        public function TextState(_text:String, next:FlxState, timing:Number) {
             super();
             this._text = _text;
             this.nextState = next;
+            timer = timing;
         }
 
         override public function create():void
@@ -21,7 +23,7 @@ package
             bg_sprite.loadGraphic(Bg,false,false,532,432);
             FlxG.state.add(bg_sprite);
 
-            endTime = 1;
+            endTime = timer;
 
             var t:FlxText;
             t = new FlxText(0,FlxG.height/2-10,FlxG.width,_text);

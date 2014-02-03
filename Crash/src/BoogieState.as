@@ -85,6 +85,11 @@ package
         public var speed:Number;
         public var waves_caught:Number;
 
+        public var date:Date = new Date();
+        public var seed:Number = date.time;
+
+        public var r:Number;
+
         public function BoogieState(new_speed:Number, wave:Number){
             speed = new_speed;
             waves_caught = wave;
@@ -131,9 +136,10 @@ package
             groundFixture = groundBody.CreateFixture(groundFixtureDef);
             groundFixtureDef.isSensor = false;
 
+            r = (Math.random()*300)+150;
             swimBodyDef = new b2BodyDef();
             swimBodyDef.type = b2Body.b2_dynamicBody;
-            swimBodyDef.position.Set(300/PHYS_SCALE, 100/PHYS_SCALE);
+            swimBodyDef.position.Set(r/PHYS_SCALE, 100/PHYS_SCALE);
             swimBody = m_world.CreateBody(swimBodyDef);
             circleShape = new b2CircleShape(.3);
             swimFixtureDef = new b2FixtureDef();
@@ -234,7 +240,7 @@ package
             distance.text = "Distance to shore: " + Math.abs(Math.round(10-time_sec)).toString() + " feet.";
 
             if(stamina == 0){
-                FlxG.switchState(new TextState("You ran out of energy\n and got crushed!\n",new MenuState()));
+                FlxG.switchState(new TextState("You ran out of energy\n and got crushed!\n",new MenuState(), 1));
             }
 
             if(stamina < 600-200){
@@ -266,7 +272,7 @@ package
             swim_sprite.y = (swim_pos.y * m_physScale / 2) - swim_sprite.height/2;
             swim_sprite.angle = swimBody.GetAngle() * (180 / Math.PI);
 
-            var r:Number = Math.random()*200;
+            r = Math.random()*200;
             var r_wave:Number = Math.random()*(200 + (200*speed));
             var l_wave:Number = Math.random()*(200 + (200*speed));
 
@@ -283,7 +289,7 @@ package
                 if(waves_caught%10 == 3){
                     ending = "rd";
                 }
-                FlxG.switchState(new TextState("That was my " + waves_caught.toString() + ending + " wave!\n I'm gonna catch another!",new PlayState(speed+.1,waves_caught)));
+                FlxG.switchState(new TextState("That was my " + waves_caught.toString() + ending + " wave!\n I'm gonna catch another!",new PlayState(speed+.1,waves_caught), 2));
             }
 
             if(swim_pos.y < 0){
