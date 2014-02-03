@@ -107,7 +107,7 @@ package
             bg_sprite.loadGraphic(Bg,false,false,532,432);
             FlxG.state.add(bg_sprite);
 
-            stamina_sprite = new FlxSprite(100,20);
+            stamina_sprite = new FlxSprite(65,23);
             stamina_sprite.loadGraphic(Stamina,true,true,295/5,10,false);
             stamina_sprite.addAnimation("five", [0], 12, true);
             stamina_sprite.addAnimation("four", [1], 12, true);
@@ -231,10 +231,10 @@ package
             m_world.Step(1.0/30.0, 10, 10);
             //m_world.DrawDebugData();
 
-            distance.text = "Distance to shore: " + Math.abs(Math.round(10-time_sec)).toString();
+            distance.text = "Distance to shore: " + Math.abs(Math.round(10-time_sec)).toString() + " feet.";
 
             if(stamina == 0){
-                FlxG.switchState(new TextState("You ran out of energy\n and got crushed!",new MenuState()));
+                FlxG.switchState(new TextState("You ran out of energy\n and got crushed!\n",new MenuState()));
             }
 
             if(stamina < 600-200){
@@ -271,8 +271,19 @@ package
             var l_wave:Number = Math.random()*(200 + (200*speed));
 
             if(time_sec == 10){
+                //increase wave count and difficulty for next round
                 waves_caught += 1;
-                FlxG.switchState(new TextState("That was my " + waves_caught.toString() + " wave!\n I'm gonna catch another!",new PlayState(speed+.1,waves_caught)));
+                var ending:String = "th";
+                if(waves_caught%10 == 1){
+                    ending = "st";
+                }
+                if(waves_caught%10 == 2){
+                    ending = "nd";
+                }
+                if(waves_caught%10 == 3){
+                    ending = "rd";
+                }
+                FlxG.switchState(new TextState("That was my " + waves_caught.toString() + ending + " wave!\n I'm gonna catch another!",new PlayState(speed+.1,waves_caught)));
             }
 
             if(swim_pos.y < 0){

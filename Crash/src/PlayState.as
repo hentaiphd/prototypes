@@ -212,12 +212,7 @@ package
 
             if(ridingwave) {
                 swimBody.SetUserData("swimmer_win");
-                debugText.text = "CATCH THE WAVEEZZZ";
-                if(FlxG.keys.SPACE){
-                    m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+.4,swim_pos.y-.1));
-                } else {
-                    m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+.1,swim_pos.y-.1));
-                }
+                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+.4,swim_pos.y));
                 if(swim_pos.x > 16){
                     FlxG.switchState(new TextState("Ride the wave, but don't fall off!",new BoogieState(speed,waves_caught)));
                 }
