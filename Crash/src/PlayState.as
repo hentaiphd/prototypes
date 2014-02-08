@@ -197,9 +197,9 @@ package
                 if(swim_pos.x > 100/PHYS_SCALE){
                     distance.text = Math.abs(Math.round((100/PHYS_SCALE - swim_pos.x))).toString() + " more feet to catch a wave!";
                     if(FlxG.keys.SPACE){
-                        m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x,swim_pos.y+1));
+                        m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x,swim_pos.y+speed));
                     } else {
-                        m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-.1,swim_pos.y-.1));
+                        m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-.1,swim_pos.y-.2));
                     }
                 } else {
                     ridingwave = true;
@@ -214,7 +214,7 @@ package
                 swimBody.SetUserData("swimmer_win");
                 m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+.4,swim_pos.y-.06));
                 if(swim_pos.x > 16){
-                    FlxG.switchState(new TextState("Ride the wave, but don't fall off!",new BoogieState(speed,waves_caught), 2));
+                    FlxG.switchState(new TextState("Ride the wave using SPACE, but don't fall off!",new BoogieState(speed,waves_caught), 2));
                 }
             }
 

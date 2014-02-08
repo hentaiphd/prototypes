@@ -97,8 +97,8 @@ package
 
         override public function create():void
         {
-            //debugText = new FlxText(10, 30, FlxG.width, "boogie");
-            //add(debugText);
+            debugText = new FlxText(100, 100, FlxG.width, "");
+            add(debugText);
 
             this.add(s);
             this.add(w);
@@ -227,7 +227,7 @@ package
         override public function update():void
         {
             super.update();
-            //debugText.text = "stamina: " + stamina.toString() + "time_sec: " + time_sec.toString();
+            debugText.text = "stamina: " + stamina.toString() + "time_sec: " + time_sec.toString();
 
             time_frame++;
             if(time_frame%100 == 0){
@@ -237,22 +237,22 @@ package
             m_world.Step(1.0/30.0, 10, 10);
             //m_world.DrawDebugData();
 
-            distance.text = "Distance to shore: " + Math.abs(Math.round(10-time_sec)).toString() + " feet.";
+            distance.text = "Distance to shore: " + Math.abs(Math.round(10-time_sec)).toString() + " feet";
 
             if(stamina == 0){
                 FlxG.switchState(new TextState("You ran out of energy\n and got crushed!\n",new MenuState(), 1));
             }
 
-            if(stamina < 600-200){
+            if(stamina < 600-150){
                 stamina_sprite.play("four");
             }
-            if(stamina < 600-300){
+            if(stamina < 600-250){
                 stamina_sprite.play("three");
             }
-            if(stamina < 600-400){
+            if(stamina < 600-350){
                 stamina_sprite.play("two");
             }
-            if(stamina < 600-500){
+            if(stamina < 600-450){
                 stamina_sprite.play("one");
             }
 
@@ -289,11 +289,11 @@ package
                 if(waves_caught%10 == 3){
                     ending = "rd";
                 }
-                FlxG.switchState(new TextState("That was my " + waves_caught.toString() + ending + " wave!\n I'm gonna catch another!",new PlayState(speed+.1,waves_caught), 2));
+                FlxG.switchState(new TextState("That was your " + waves_caught.toString() + ending + " wave!\n You can catch another!",new PlayState(speed+.1,waves_caught), 2));
             }
 
             if(swim_pos.y < 0){
-                m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x,swim_pos.y));
+                swimBody.SetPosition(new b2Vec2(swim_pos.x,swim_pos.y+.5));
             }
 
             if(FlxG.keys.SPACE){
@@ -307,11 +307,12 @@ package
                 m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-.01,swim_pos.y-.01));
             } else if(swim_pos.x < start_x+(r/PHYS_SCALE)){
                 if(stamina > 0){
-                    m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+1,swim_pos.y+.4));
+                    m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x+1,swim_pos.y+speed));
                 } else {
                     m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-1,swim_pos.y+.7));
                 }
             } else {
+                //stamina += .5;
                 m_mouseJoint.SetTarget(new b2Vec2(swim_pos.x-1,swim_pos.y+.09));
             }
 
@@ -344,22 +345,6 @@ package
             dbgDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
             m_world.SetDebugDraw(dbgDraw);
         }
-
-        public function CalculateBezierPoint(t:Number,p0:Number,p1:Number):b2Vec2
-            {
-                var u:Number = 1-t;
-                var tt:Number = t*t;
-                var uu:Number = u*u;
-                var uuu:Number = uu * u;
-                var ttt:Number = tt * t;
-
-                var p:b2Vec2 = new b2Vec2(uuu * p0,(3 * uu * t * p1)+(uuu * p0)); //first term
-                //p += 3 * uu * t * p1; //second term
-                //p += 3 * u * tt * p2; //third term
-                //p += ttt * p3; //fourth term
-
-                return p;
-            }
 
     }
 }
