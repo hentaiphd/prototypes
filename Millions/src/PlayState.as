@@ -32,8 +32,9 @@ package{
             _level.follow();
             add(_level);
 
-            _level.setTileProperties(1,FlxObject.NONE);
-            _level.setTileProperties(2,FlxObject.NONE,offRoading,null,100);
+            _level.setTileProperties(1,FlxObject.NONE,onRoad);
+            _level.setTileProperties(6,FlxObject.NONE,offRoading,null,100);
+            _level.setTileProperties(5,FlxObject.ANY);
 
             _player = new Player(35, _level.height-30);
             add(_player);
@@ -65,8 +66,12 @@ package{
 
         }
 
+        public function onRoad(tile:uint,obj:Player):void{
+            obj.onRoad = true;
+        }
+
         public function offRoading(tile:uint,obj:Player):void{
-            //obj.runSpeed -= .1;
+            obj.onRoad = false;
         }
 
         public function displacement(_object1:FlxSprite, _object2:FlxSprite):Number{
