@@ -12,12 +12,14 @@ package{
         protected var _player:Player;
         protected var zoomcam:ZoomCamera;
         protected var _timer:Number;
-        public var debugText:FlxText;
+        public var minText:FlxText;
+        public var fallText:FlxText;
 
         protected var _gameStateActive:Boolean;
         protected var _pregameActive:Boolean = true;
         protected var _goalText:FlxText;
         protected var _goalSprite:FlxSprite;
+        protected var _obstacleGroup:FlxGroup;
 
         protected var goal:Boolean = false;
 
@@ -56,6 +58,15 @@ package{
 
             add(_goalText);
 
+            _obstacleGroup = new FlxGroup();
+            for(var i:Number = 0; i < 10; i++){
+                var rx:Number = Math.random()*_level.width;
+                var ry:Number = Math.random()*_level.height;
+                var _obs:Obstacle = new Obstacle(rx,ry);
+                _obstacleGroup.add(_obs);
+                add(_obs);
+            }
+
             FlxG.worldBounds = new FlxRect(0, 0, _level.width, _level.height);
 
             zoomcam = new ZoomCamera(0, 0, 640, 480);
@@ -65,8 +76,13 @@ package{
 
             startGame();
 
-            debugText = new FlxText(_player.x,_player.y,100,"");
-            add(debugText);
+            minText = new FlxText(_player.x,_player.y,100,"");
+            minText.color = 0xFF7967CA;
+            add(minText);
+
+            fallText = new FlxText(_player.x,_player.y,100,"");
+            fallText.color = 0xFF7967CA;
+            add(fallText);
         }
 
         public function startGame():void{
@@ -81,9 +97,10 @@ package{
                 timer++;
             }
 
-            //debugText.x = _player.x;
-            //debugText.y = _player.y;
-            //debugText.text = goal.toString();
+            minText.x = _player.x+115;
+            minText.y = _player.y-40;
+            minText.text = timer.toString() + " minutes passed!";
+
             _timer += FlxG.elapsed;
             super.update();
             FlxG.collide(_player, _level);
@@ -107,16 +124,19 @@ package{
                     }
                 }
             }
-
         }
 
         public function onRoad(tile:uint,obj:Player):void{
             obj.onRoad = true;
+            fallText.text = "";
         }
 
         public function offRoading(tile:uint,obj:Player):void{
             obj.onRoad = false;
             fell++;
+            fallText.x = _player.x+115;
+            fallText.y = _player.y-20;
+            fallText.text = "You fell!";
         }
 
         public function displacement(_object1:FlxSprite, _object2:FlxSprite):Number{
