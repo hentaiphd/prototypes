@@ -27,6 +27,14 @@ package{
         public var timer:Number = 0;
         public var fell:Number = 0;
 
+        public var player_pick:String;
+        public var caller_pick:String;
+
+        public function PlayState(p:String,caller:String){
+            player_pick = p;
+            caller_pick = caller;
+        }
+
         override public function create():void{
 
             FlxG.bgColor = 0xFFccfbff;
@@ -43,7 +51,7 @@ package{
             _level.setTileProperties(6,FlxObject.NONE,offRoading,null,100);
             _level.setTileProperties(5,FlxObject.ANY);
 
-            _player = new Player(35, _level.height-30);
+            _player = new Player(35, _level.height-30,player_pick);
             add(_player);
 
             _goalText = new FlxText(250,270,100,"Booty Call!");
@@ -60,9 +68,9 @@ package{
 
             _obstacleGroup = new FlxGroup();
             for(var i:Number = 0; i < 10; i++){
-                var rx:Number = Math.random()*_level.width;
-                var ry:Number = Math.random()*_level.height;
-                var _obs:Obstacle = new Obstacle(rx,ry);
+                var rx:Number = Math.random()*_level.getBounds().right;
+                var ry:Number = 50+Math.random()*(_level.getBounds().bottom-100);
+                var _obs:Obstacle = new Obstacle(rx,ry,_level);
                 _obstacleGroup.add(_obs);
                 add(_obs);
             }
@@ -92,12 +100,14 @@ package{
         }
 
         override public function update():void{
+            FlxG.overlap(_player,_obstacleGroup,trip);
             timeFrame++;
-            if(timeFrame%50 == 0){
+
+            if(timeFrame%30 == 0){
                 timer++;
             }
 
-            minText.x = _player.x+115;
+            minText.x = _player.x+110;
             minText.y = _player.y-40;
             minText.text = timer.toString() + " minutes passed!";
 
@@ -112,15 +122,15 @@ package{
             if(goal == true){
                 if(timer > 60){
                     if(fell > 10){
-                        FlxG.switchState(new TextState("You made it in " + timer.toString() + " minutes.\nBut you took so long, so they're not that into it...\nYou also fell " + fell + " times, so you're kinda beat up... but that's... sorta sexy???", new MenuState()));
+                        FlxG.switchState(new TextState("You made it in " + timer.toString() + " minutes.\nBut you took so long, so they're not that into it...\nYou also fell " + fell + " times, so you're kinda beat up... but that's... sorta sexy???", new MenuState(), player_pick, caller_pick));
                     } else {
-                        FlxG.switchState(new TextState("You made it in " + timer.toString() + " minutes.\nAnd you only fell " + fell + " times! You kept it cool!", new MenuState()));
+                        FlxG.switchState(new TextState("You made it in " + timer.toString() + " minutes.\nAnd you only fell " + fell + " times! You kept it cool!", new MenuState(), player_pick, caller_pick));
                     }
                 } else{
                     if(fell > 10){
-                        FlxG.switchState(new TextState("Booty call success! You made it in " + timer.toString() + " minutes.\nBut, you fell " + fell + " times, so you're kinda beat up... but that's... sorta sexy???", new MenuState()));
+                        FlxG.switchState(new TextState("Booty call success! You made it in " + timer.toString() + " minutes.\nBut, you fell " + fell + " times, so you're kinda beat up... but that's... sorta sexy???", new MenuState(),player_pick, caller_pick));
                     } else {
-                        FlxG.switchState(new TextState("Booty call success! You made it in " + timer.toString() + " minutes.\nAnd you only fell " + fell + " times! You kept it cool!", new MenuState()));
+                        FlxG.switchState(new TextState("Booty call success! You made it in " + timer.toString() + " minutes.\nAnd you only fell " + fell + " times! You kept it cool!", new MenuState(), player_pick, caller_pick));
                     }
                 }
             }
@@ -133,10 +143,18 @@ package{
 
         public function offRoading(tile:uint,obj:Player):void{
             obj.onRoad = false;
+            FlxG.shake(.001,.02);
             fell++;
             fallText.x = _player.x+115;
             fallText.y = _player.y-20;
             fallText.text = "You fell!";
+        }
+
+        public function trip(p:FlxObject,o:FlxObject):void{
+            _player.acceleration.y += .5;
+            FlxG.shake(.001,.02);
+            fell++;
+            fallText.text = "You tripped!";
         }
 
         public function displacement(_object1:FlxSprite, _object2:FlxSprite):Number{

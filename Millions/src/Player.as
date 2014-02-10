@@ -2,36 +2,35 @@ package{
     import org.flixel.*;
 
     public class Player extends FlxSprite{
-        [Embed(source = '../assets/girl_sprite.png')] public static var sprite:Class;
+        [Embed(source = '../assets/boy.png')] public static var sprite_b:Class;
+        [Embed(source = '../assets/girl.png')] public static var sprite_g:Class;
 
         public var runSpeed:Number = .05;
-        public var offRoad_runSpeed:Number = .03;
+        public var offRoad_runSpeed:Number = .04;
         public var _scale:FlxPoint = new FlxPoint(1,1);
         public var _scaleFlipX:Number = 1;
         public var _scaleFlipY:Number = 1;
         public var pos:FlxPoint;
         public var accelerate:FlxPoint;
         public var velo:FlxPoint;
-        public var maxSpeed:Number = 1;
-        public var offRoad_maxSpeed:Number = .05;
+        public var maxSpeed:Number = 1.5;
+        public var offRoad_maxSpeed:Number = .1;
         public var onRoad:Boolean = true;
 
-        public function Player(x:Number, y:Number):void{
+        public function Player(x:Number, y:Number, sp:String):void{
             super(x,y);
 
-            pos = new FlxPoint(this.x,this.y);
-            accelerate = new FlxPoint(0,0);
-            velo = new FlxPoint(0,0);
+            if(sp == "boy"){
+                loadGraphic(sprite_b, true, true, 14, 16, true);
+            }
+            if(sp == "girl"){
+                loadGraphic(sprite_g, true, true, 14, 16, true);
+            }
 
-            loadGraphic(sprite, true, true, 15, 28, true);
-            width = 8;
-            height = 8;
-            offset.y = 21;
-
-            addAnimation("run", [1,2], 14, true);
+            addAnimation("run", [2,3], 14, true);
             addAnimation("standing", [0]);
             addAnimation("runBack", [4,5], 14, true);
-            addAnimation("standingBack", [3]);
+            addAnimation("standingBack", [4]);
 
             this.scale = _scale;
         }
