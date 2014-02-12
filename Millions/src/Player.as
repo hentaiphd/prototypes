@@ -10,9 +10,6 @@ package{
         public var _scale:FlxPoint = new FlxPoint(1,1);
         public var _scaleFlipX:Number = 1;
         public var _scaleFlipY:Number = 1;
-        public var pos:FlxPoint;
-        public var accelerate:FlxPoint;
-        public var velo:FlxPoint;
         public var maxSpeed:Number = 1.5;
         public var offRoad_maxSpeed:Number = .1;
         public var onRoad:Boolean = true;

@@ -35,7 +35,7 @@ package{
             }
 
             this.x += runSpeed;
-            this.y = y_pos + Math.sin(_frames*.5)*5;
+            this.y = y_pos + Math.sin(_frames*.7)*5;
 
         }
     }
