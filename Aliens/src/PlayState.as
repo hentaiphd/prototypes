@@ -39,6 +39,7 @@ package
 
         override public function create():void
         {
+            FlxG.mouse.show();
             started = false;
 
             debugText = new FlxText(10, 30, FlxG.width, "");

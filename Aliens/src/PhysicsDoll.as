@@ -26,6 +26,12 @@ package
         public var footLSprite:FlxSprite;
         public var footRSprite:FlxSprite;
 
+        public var groundBodyDef:b2BodyDef;
+        public var groundBody:b2Body;
+        public var groundShape:b2PolygonShape;
+        public var groundFixtureDef:b2FixtureDef;
+        public var groundFixture:b2Fixture;
+
         public var head:b2Body;
         public var torso1:b2Body;
         public var upperArmL1:b2Body;
@@ -60,6 +66,9 @@ package
         public static const COL_R_HAND:String = "R_HAND";
         public static const COL_GROIN:String = "GROIN";
 
+        public var m_mouseJoint:b2MouseJoint;
+        public var PHYS_SCALE:Number = 30;
+
         public function create(_world:b2World, start:FlxPoint,
                                spriteType:int = ATYPE):void
         {
@@ -86,7 +95,9 @@ package
             fixtureDef.restitution = 0.3;
             var headY:Number = 40;
             bd.position.Set(startX / m_physScale, (startY - headY) / m_physScale);
+            bd.type = b2Body.b2_staticBody;
             head = m_world.CreateBody(bd);
+            bd.type = b2Body.b2_dynamicBody;
             fixtureDef.isSensor = true;
             fixtureDef.userData = COL_HEAD;
             head.CreateFixture(fixtureDef);
@@ -96,17 +107,15 @@ package
             box = new b2PolygonShape();
             box.SetAsBox(50 / m_physScale, 50 / m_physScale);
             fixtureDef.shape = box;
-            fixtureDef.density = 1.0;
-            fixtureDef.friction = 0.4;
-            fixtureDef.restitution = 0.1;
-            filterData = new b2FilterData();
-            filterData.maskBits = TORSOMASK;
-            filterData.categoryBits = TORSOCAT;
-            fixtureDef.filter = filterData;
+            //fixtureDef.density = 1.0;
+            //fixtureDef.friction = 0.4;
+            //fixtureDef.restitution = 0.1;
             bd.position.Set(startX / m_physScale, (startY + 50) / m_physScale);
+            bd.type = b2Body.b2_staticBody;
             torso1 = m_world.CreateBody(bd);
+            bd.type = b2Body.b2_dynamicBody;
             torso1.CreateFixture(fixtureDef);
-            // Torso2
+            /* Torso2
             box = new b2PolygonShape();
             box.SetAsBox(50 / m_physScale, 50 / m_physScale);
             fixtureDef.shape = box;
@@ -114,27 +123,19 @@ package
             bd.fixedRotation = true;
             var torso2:b2Body = m_world.CreateBody(bd);
             torso2.CreateFixture(fixtureDef);
-            bd.fixedRotation = false;
-            midriff = torso2;
+            bd.fixedRotation = false;*/
+            midriff = torso1;
 
             // UpperArm
             fixtureDef.density = 1.0;
             fixtureDef.friction = 0.4;
             fixtureDef.restitution = 0.1;
-            filterData = new b2FilterData();
-            filterData.maskBits = ARMMASK;
-            filterData.categoryBits = ARMCAT;
-            fixtureDef.filter = filterData;
             // L1
             box = new b2PolygonShape();
             box.SetAsBox(30 / m_physScale, 10 / m_physScale);
             fixtureDef.shape = box;
             var armSpace:Number = 90;
             var armHeight:Number = 10;
-            if (spriteType == ATYPE) {
-                armSpace = 70;
-                armHeight = 15;
-            }
             bd.position.Set((startX - armSpace) / m_physScale, (startY + armHeight) / m_physScale);
             upperArmL1 = m_world.CreateBody(bd);
             upperArmL1.CreateFixture(fixtureDef);
@@ -142,14 +143,14 @@ package
             box = new b2PolygonShape();
             box.SetAsBox(30 / m_physScale, 10 / m_physScale);
             fixtureDef.shape = box;
-            bd.position.Set((startX - 120) / m_physScale, (startY + armHeight) / m_physScale);
+            bd.position.Set((startX - 100) / m_physScale, (startY + armHeight) / m_physScale);
             upperArmL2 = m_world.CreateBody(bd);
             upperArmL2.CreateFixture(fixtureDef);
             // L Hand
             box = new b2PolygonShape();
             box.SetAsBox(10 / m_physScale, 10 / m_physScale);
             fixtureDef.shape = box;
-            bd.position.Set((startX - 150) / m_physScale, (startY + armHeight) / m_physScale);
+            bd.position.Set((startX - 130) / m_physScale, (startY + armHeight) / m_physScale);
             l_hand = m_world.CreateBody(bd);
             fixtureDef.isSensor = true;
             fixtureDef.userData = COL_L_HAND;
@@ -182,57 +183,6 @@ package
             fixtureDef.isSensor = false;
             bd.fixedRotation = false;
 
-            // UpperLeg
-            fixtureDef.density = 1.0;
-            fixtureDef.friction = 0.4;
-            fixtureDef.restitution = 0.1;
-            var filterData:b2FilterData = new b2FilterData();
-            filterData.maskBits = LEGAMASK;
-            filterData.categoryBits = LEGACAT;
-            if (spriteType == BTYPE) {
-                filterData.maskBits = LEGBMASK;
-                filterData.categoryBits = LEGBCAT;
-            }
-            fixtureDef.filter = filterData;
-            // L
-            box = new b2PolygonShape();
-            box.SetAsBox(20 / m_physScale, 66 / m_physScale);
-            fixtureDef.shape = box;
-            bd.position.Set((startX - LEGSPACING) / m_physScale, (startY + 170) / m_physScale);
-            upperLegL = m_world.CreateBody(bd);
-            upperLegL.CreateFixture(fixtureDef);
-            // R
-            box = new b2PolygonShape();
-            box.SetAsBox(20 / m_physScale, 66 / m_physScale);
-            fixtureDef.shape = box;
-            bd.position.Set((startX + LEGSPACING) / m_physScale, (startY + 170) / m_physScale);
-            upperLegR = m_world.CreateBody(bd);
-            upperLegR.CreateFixture(fixtureDef);
-
-            // LowerLeg
-            fixtureDef.density = 1.0;
-            fixtureDef.friction = 0.4;
-            fixtureDef.restitution = 0.1;
-            filterData = new b2FilterData();
-            filterData.maskBits = FOOTMASK;
-            filterData.categoryBits = FOOTCAT;
-            fixtureDef.filter = filterData;
-            // L
-            box = new b2PolygonShape();
-            box.SetAsBox(6 / m_physScale, 10 / m_physScale);
-            fixtureDef.shape = box;
-            bd.position.Set((startX - LEGSPACING) / m_physScale, (startY + 247) / m_physScale);
-            lowerLegL = m_world.CreateBody(bd);
-            lowerLegL.CreateFixture(fixtureDef);
-            // R
-            box = new b2PolygonShape();
-            box.SetAsBox(6 / m_physScale, 10 / m_physScale);
-            fixtureDef.shape = box;
-            bd.position.Set((startX + LEGSPACING) / m_physScale, (startY + 247) / m_physScale);
-            lowerLegR = m_world.CreateBody(bd);
-            lowerLegR.CreateFixture(fixtureDef);
-
-
             // JOINTS
             jd.enableLimit = true;
 
@@ -245,17 +195,14 @@ package
             // Upper arm to shoulders
             // L
             var shoulderJointSpace:Number = 32;
-            if (spriteType == ATYPE) {
-                shoulderJointSpace = 22;
-            }
             jd.lowerAngle = -85 / (180/Math.PI);
             jd.upperAngle = 10 / (180/Math.PI);
-            jd.Initialize(torso1, upperArmL1, new b2Vec2((startX - 30) / m_physScale, (startY + 10) / m_physScale));
+            jd.Initialize(torso1, upperArmL1, new b2Vec2((startX - 50) / m_physScale, (startY + 10) / m_physScale));
             m_world.CreateJoint(jd);
             //L1 to L2
             jd.lowerAngle = -85 / (180/Math.PI);
             jd.upperAngle = 10 / (180/Math.PI);
-            jd.Initialize(upperArmL1, upperArmL2, new b2Vec2((startX - 60) / m_physScale, (startY + 10) / m_physScale));
+            jd.Initialize(upperArmL1, upperArmL2, new b2Vec2((startX - 90) / m_physScale, (startY + 10) / m_physScale));
             m_world.CreateJoint(jd);
             // L Hand to L Arm
             jd.lowerAngle = -125 / (180/Math.PI);
@@ -265,12 +212,12 @@ package
             // R
             jd.lowerAngle = -10 / (180/Math.PI);
             jd.upperAngle = 85 / (180/Math.PI);
-            jd.Initialize(torso1, upperArmR1, new b2Vec2((startX + 30) / m_physScale, (startY + 10) / m_physScale));
+            jd.Initialize(torso1, upperArmR1, new b2Vec2((startX + 50) / m_physScale, (startY + 10) / m_physScale));
             m_world.CreateJoint(jd);
             // R1 to R2
             jd.lowerAngle = -10 / (180/Math.PI);
             jd.upperAngle = 85 / (180/Math.PI);
-            jd.Initialize(upperArmR1, upperArmR2, new b2Vec2((startX + 60) / m_physScale, (startY + 10) / m_physScale));
+            jd.Initialize(upperArmR1, upperArmR2, new b2Vec2((startX + 90) / m_physScale, (startY + 10) / m_physScale));
             m_world.CreateJoint(jd);
             // R Hand to R Arm
             jd.lowerAngle = -125 / (180/Math.PI);
@@ -278,37 +225,34 @@ package
             jd.Initialize(upperArmR2, r_hand, new b2Vec2((startX+150) / m_physScale, (startY+armHeight) / m_physScale));
             m_world.CreateJoint(jd);
 
-            // Shoulders/stomach
+            /* Shoulders/stomach
             jd.lowerAngle = -15 / (180/Math.PI);
             jd.upperAngle = 15 / (180/Math.PI);
             jd.Initialize(torso1, torso2, new b2Vec2(startX / m_physScale, (startY + 65) / m_physScale));
-            m_world.CreateJoint(jd);
+            m_world.CreateJoint(jd);*/
 
-            // Torso to upper leg
-            // L
-            jd.lowerAngle = -5 / (180/Math.PI);
-            jd.upperAngle = 45 / (180/Math.PI);
-            jd.Initialize(torso2, upperLegL, new b2Vec2((startX - LEGSPACING) / m_physScale, (startY + 96) / m_physScale));
-            m_world.CreateJoint(jd);
-            // R
-            jd.lowerAngle = -45 / (180/Math.PI);
-            jd.upperAngle = 5 / (180/Math.PI);
-            jd.Initialize(torso2, upperLegR, new b2Vec2((startX + LEGSPACING) / m_physScale, (startY + 96) / m_physScale));
-            m_world.CreateJoint(jd);
-
-            // Upper leg to lower leg
-            // L
-            jd.lowerAngle = 10 / (180/Math.PI);
-            jd.upperAngle = 40 / (180/Math.PI);
-            jd.Initialize(upperLegL, lowerLegL, new b2Vec2((startX - LEGSPACING) / m_physScale, (startY + 235) / m_physScale));
-            m_world.CreateJoint(jd);
-            // R
-            jd.lowerAngle = -40 / (180/Math.PI);
-            jd.upperAngle = 10 / (180/Math.PI);
-            jd.Initialize(upperLegR, lowerLegR, new b2Vec2((startX + LEGSPACING) / m_physScale, (startY + 235) / m_physScale));
-            m_world.CreateJoint(jd);
+            //table
+            groundBodyDef = new b2BodyDef();
+            groundBodyDef.position.Set(100/PHYS_SCALE, (FlxG.height*2.5)/PHYS_SCALE);
+            groundBody = m_world.CreateBody(groundBodyDef);
+            groundShape = new b2PolygonShape();
+            groundShape.SetAsBox((FlxG.width*2)/PHYS_SCALE, (FlxG.height/2)/PHYS_SCALE);
+            groundFixtureDef = new b2FixtureDef();
+            groundFixtureDef.shape = groundShape;
+            groundBody.SetUserData("table");
+            groundFixtureDef.isSensor = true;
+            groundFixture = groundBody.CreateFixture(groundFixtureDef);
+            groundFixtureDef.isSensor = false;
 
             setupSprites();
+
+            var md:b2MouseJointDef = new b2MouseJointDef();
+            md.bodyA = groundBody;
+            md.bodyB = l_hand;
+            md.target.Set(l_hand.GetPosition().x, l_hand.GetPosition().y);
+            md.collideConnected = true;
+            md.maxForce = 30;
+            m_mouseJoint = m_world.CreateJoint(md) as b2MouseJoint;
         }
 
         public function update():void
@@ -352,6 +296,15 @@ package
             footRSprite.x = (lowerLegL.GetPosition().x * m_physScale / 2) - footRSprite.width/2;
             footRSprite.y = (lowerLegL.GetPosition().y * m_physScale / 2) - footRSprite.height/2;
             footRSprite.angle = lowerLegL.GetAngle() * (180 / Math.PI) ;
+
+            var mousepoint:FlxPoint = new FlxPoint(FlxG.mouse.x/PHYS_SCALE,FlxG.mouse.y/PHYS_SCALE);
+            var handLpoint:FlxPoint = new FlxPoint(l_hand.GetPosition().x,l_hand.GetPosition().y);
+
+            if(FlxU.getDistance(mousepoint,handLpoint) < 20/PHYS_SCALE){
+                if(FlxG.mouse.pressed()){
+                    m_mouseJoint.SetTarget(new b2Vec2(mousepoint.x,mousepoint.y));
+                }
+            }
         }
 
         public function setupSprites():void
