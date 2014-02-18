@@ -32,18 +32,10 @@ package
         public var rArm:Arm;
 
         public var debugText:FlxText;
-        public var started:Boolean;
-        public var smoke:FlxSprite;
-        public var howText1:FlxText;
-        public var howText2:FlxText;
 
         override public function create():void
         {
             FlxG.mouse.show();
-            started = false;
-
-            debugText = new FlxText(10, 30, FlxG.width, "");
-            add(debugText);
 
             setupWorld();
 
@@ -54,50 +46,34 @@ package
             worldAABB.lowerBound.Set(0, 220 / m_physScale);
             worldAABB.upperBound.Set(640 / m_physScale, 480 / m_physScale);
 
-            dollLGrabber = new DollGrabber();
-
-            lArm = new Arm(50, dollLGrabber, false);
-
             var position:FlxPoint = new FlxPoint(startX, startY);
             dollL = new PhysicsDoll();
             dollL.create(m_world, position, PhysicsDoll.ATYPE);
-            dollLGrabber.create(dollL, m_world, worldAABB);
 
             //setup collision listener
             dollCollision = new DollContactListener();
             m_world.SetContactListener(dollCollision);
 
-            dollController = new DollController(dollLGrabber, lArm);
+            debugText = new FlxText(100, 30, FlxG.width, "hello");
+            add(debugText);
+            debugText.color = 0xf9d0b4;
         }
 
         override public function update():void
         {
             super.update();
 
-            if(timeFrame%100 == 0 && !started){
-                endTime++;
-            }
-
-            if(dollController.update(endTime - timeSec)){
-                started = true;
-            }
-
-            if (started) {
-                FlxG.state.remove(smoke);
-                FlxG.state.remove(howText1);
-                FlxG.state.remove(howText2);
-            }
-
             UpdateMouseWorld()
-            MouseDrag();
 
             m_world.Step(1.0/30.0, 10, 10);
             m_world.DrawDebugData();
 
             dollL.update();
-            dollLGrabber.update();
 
-            lArm.update();
+            var mousepoint:FlxPoint = new FlxPoint(FlxG.mouse.x/dollL.PHYS_SCALE,FlxG.mouse.y/dollL.PHYS_SCALE);
+            var handLpoint:FlxPoint = new FlxPoint(dollL.l_hand.GetPosition().x,dollL.l_hand.GetPosition().y);
+
+            debugText.text = "FlxU.getDistance(mousepoint,handLpoint).toString()";
         }
 
         override public function endCallback():void
@@ -110,71 +86,6 @@ package
             mouseYWorldPhys = (FlxG.mouse.screenY)/m_physScale;
             mouseXWorld = (FlxG.mouse.screenX);
             mouseYWorld = (FlxG.mouse.screenY);
-        }
-
-        public function MouseDrag():void{
-            // mouse press
-            if (FlxG.mouse.pressed() && !m_mouseJoint){
-
-                var body:b2Body = GetBodyAtMouse();
-
-                if (body)
-                {
-                    var md:b2MouseJointDef = new b2MouseJointDef();
-                    md.bodyA = m_world.GetGroundBody();
-                    md.bodyB = body;
-                    md.target.Set(mouseXWorldPhys, mouseYWorldPhys);
-                    md.collideConnected = true;
-                    md.maxForce = 300.0 * body.GetMass();
-                    m_mouseJoint = m_world.CreateJoint(md) as b2MouseJoint;
-                    body.SetAwake(true);
-                }
-            }
-
-            // mouse release
-            if (!FlxG.mouse.pressed()){
-                if (m_mouseJoint)
-                {
-                    m_world.DestroyJoint(m_mouseJoint);
-                    m_mouseJoint = null;
-                }
-            }
-
-            // mouse move
-            if (m_mouseJoint)
-            {
-                var p2:b2Vec2 = new b2Vec2(mouseXWorldPhys, mouseYWorldPhys);
-                m_mouseJoint.SetTarget(p2);
-            }
-        }
-
-        private var mousePVec:b2Vec2 = new b2Vec2();
-        public function GetBodyAtMouse(includeStatic:Boolean = false):b2Body {
-            // Make a small box.
-            mousePVec.Set(mouseXWorldPhys, mouseYWorldPhys);
-            var aabb:b2AABB = new b2AABB();
-            aabb.lowerBound.Set(mouseXWorldPhys - 0.001, mouseYWorldPhys - 0.001);
-            aabb.upperBound.Set(mouseXWorldPhys + 0.001, mouseYWorldPhys + 0.001);
-            var body:b2Body = null;
-            var fixture:b2Fixture;
-
-            // Query the world for overlapping shapes.
-            function GetBodyCallback(fixture:b2Fixture):Boolean
-            {
-                var shape:b2Shape = fixture.GetShape();
-                if (fixture.GetBody().GetType() != b2Body.b2_staticBody || includeStatic)
-                {
-                    var inside:Boolean = shape.TestPoint(fixture.GetBody().GetTransform(), mousePVec);
-                    if (inside)
-                    {
-                        body = fixture.GetBody();
-                        return false;
-                    }
-                }
-                return true;
-            }
-            m_world.QueryAABB(GetBodyCallback, aabb);
-            return body;
         }
 
         private function setupWorld():void{

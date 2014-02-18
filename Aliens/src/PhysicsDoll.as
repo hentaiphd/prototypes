@@ -69,6 +69,8 @@ package
         public var m_mouseJoint:b2MouseJoint = null;
         public var PHYS_SCALE:Number = 30;
 
+        public var debugDraw:FlxText;
+
         public function create(_world:b2World, start:FlxPoint,
                                spriteType:int = ATYPE):void
         {
@@ -262,37 +264,17 @@ package
             hipsSprite.angle = midriff.GetAngle() * (180 / Math.PI) ;
 
             armLSprite.x = (upperArmR1.GetPosition().x * m_physScale / 2) - armLSprite.width/2;
-            if (spriteType == ATYPE) {
-                armLSprite.y = (upperArmR1.GetPosition().y * m_physScale / 2) - armLSprite.height/2 - 3;
-            } else if (spriteType == BTYPE) {
-                armLSprite.y = (upperArmR1.GetPosition().y * m_physScale / 2) - armLSprite.height/2;
-            }
+            armLSprite.y = (upperArmR1.GetPosition().y * m_physScale / 2) - armLSprite.height/2 - 3;
             armLSprite.angle = upperArmR1.GetAngle() * (180 / Math.PI) ;
 
             armRSprite.x = (upperArmL1.GetPosition().x * m_physScale / 2) - armRSprite.width/2;
             armRSprite.y = (upperArmL1.GetPosition().y * m_physScale / 2) - armRSprite.height/2;
             armRSprite.angle = upperArmL1.GetAngle() * (180 / Math.PI) ;
 
-            legRSprite.x = (upperLegL.GetPosition().x * m_physScale / 2) - legRSprite.width/2;
-            legRSprite.y = (upperLegL.GetPosition().y * m_physScale / 2) - legRSprite.height/2;
-            legRSprite.angle = upperLegL.GetAngle() * (180 / Math.PI) ;
+            //var mousepoint:FlxPoint = new FlxPoint(FlxG.mouse.x/PHYS_SCALE,FlxG.mouse.y/PHYS_SCALE);
+            //var handLpoint:FlxPoint = new FlxPoint(l_hand.GetPosition().x,l_hand.GetPosition().y);
 
-            legLSprite.x = (upperLegR.GetPosition().x * m_physScale / 2) - legLSprite.width/2;
-            legLSprite.y = (upperLegR.GetPosition().y * m_physScale / 2) - legLSprite.height/2;
-            legLSprite.angle = upperLegR.GetAngle() * (180 / Math.PI) ;
-
-            footLSprite.x = (lowerLegR.GetPosition().x * m_physScale / 2) - footLSprite.width/2;
-            footLSprite.y = (lowerLegR.GetPosition().y * m_physScale / 2) - footLSprite.height/2;
-            footLSprite.angle = lowerLegR.GetAngle() * (180 / Math.PI) ;
-
-            footRSprite.x = (lowerLegL.GetPosition().x * m_physScale / 2) - footRSprite.width/2;
-            footRSprite.y = (lowerLegL.GetPosition().y * m_physScale / 2) - footRSprite.height/2;
-            footRSprite.angle = lowerLegL.GetAngle() * (180 / Math.PI) ;
-
-            var mousepoint:FlxPoint = new FlxPoint(FlxG.mouse.x/PHYS_SCALE,FlxG.mouse.y/PHYS_SCALE);
-            var handLpoint:FlxPoint = new FlxPoint(l_hand.GetPosition().x,l_hand.GetPosition().y);
-
-            if(FlxU.getDistance(mousepoint,handLpoint) < 20/PHYS_SCALE){
+            /*if(FlxU.getDistance(mousepoint,handLpoint) < 200/PHYS_SCALE){
                 if(FlxG.mouse.pressed()) {
                     if (m_mouseJoint == null){
                         var md:b2MouseJointDef = new b2MouseJointDef();
@@ -309,6 +291,13 @@ package
             // if the mouse just stopped clicking
             // and the mouse joint exists
             // kill it
+            if (!FlxG.mouse.pressed()){
+                if (m_mouseJoint)
+                {
+                    m_world.DestroyJoint(m_mouseJoint);
+                    m_mouseJoint = null;
+                }
+            }*/
         }
 
         public function setupSprites():void
