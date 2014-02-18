@@ -66,7 +66,7 @@ package
         public static const COL_R_HAND:String = "R_HAND";
         public static const COL_GROIN:String = "GROIN";
 
-        public var m_mouseJoint:b2MouseJoint;
+        public var m_mouseJoint:b2MouseJoint = null;
         public var PHYS_SCALE:Number = 30;
 
         public function create(_world:b2World, start:FlxPoint,
@@ -245,14 +245,6 @@ package
             groundFixtureDef.isSensor = false;
 
             setupSprites();
-
-            var md:b2MouseJointDef = new b2MouseJointDef();
-            md.bodyA = groundBody;
-            md.bodyB = l_hand;
-            md.target.Set(l_hand.GetPosition().x, l_hand.GetPosition().y);
-            md.collideConnected = true;
-            md.maxForce = 30;
-            m_mouseJoint = m_world.CreateJoint(md) as b2MouseJoint;
         }
 
         public function update():void
@@ -301,10 +293,22 @@ package
             var handLpoint:FlxPoint = new FlxPoint(l_hand.GetPosition().x,l_hand.GetPosition().y);
 
             if(FlxU.getDistance(mousepoint,handLpoint) < 20/PHYS_SCALE){
-                if(FlxG.mouse.pressed()){
+                if(FlxG.mouse.pressed()) {
+                    if (m_mouseJoint == null){
+                        var md:b2MouseJointDef = new b2MouseJointDef();
+                        md.bodyA = groundBody;
+                        md.bodyB = l_hand;
+                        md.collideConnected = false;
+                        md.maxForce = 300;
+                        m_mouseJoint = m_world.CreateJoint(md) as b2MouseJoint;
+                    }
                     m_mouseJoint.SetTarget(new b2Vec2(mousepoint.x,mousepoint.y));
                 }
             }
+
+            // if the mouse just stopped clicking
+            // and the mouse joint exists
+            // kill it
         }
 
         public function setupSprites():void
