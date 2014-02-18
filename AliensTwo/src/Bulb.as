@@ -2,19 +2,16 @@ package
 {
     import org.flixel.*;
 
-    public class Potpourri extends FlxSprite{
+    public class Bulb extends FlxSprite{
         public var table:FlxSprite;
         public var held:Boolean = false;
-        public var colors:Array = [0xffB45ED3,0xff5E81D3,0xff5ED375,0xffFCDB00];
 
-        public function Potpourri(t:FlxSprite):void{
+        public function Bulb(t:FlxSprite):void{
             table = t;
-            var rand:Number = (table.x+50)+(Math.random()*(table.width/2));
-            super(rand,30);
-
-            var c_rand:Number = Math.floor(Math.random()*colors.length);
-            this.color = colors[c_rand];
-            this.makeGraphic(5,5);
+            //var rand:Number = table.x+(Math.random()*(table.width/2));
+            super(table.x,30);
+            this.color = 0xff39E8F8;
+            this.makeGraphic(10,10);
         }
 
         override public function update():void{

@@ -42,9 +42,6 @@ package
             super.update();
             borderCollide();
 
-            acceleration.x = 0;
-            acceleration.y = 1000;
-
             if (this.no_control) return;
             if(FlxG.keys.DOWN && this.grabDown){
                 play("crouching");
@@ -108,12 +105,12 @@ package
         }
 
         public function borderCollide():void{
-            if(x >= FlxG.width - width)
-                x = FlxG.width - width;
+            if(x >= FlxG.width - width*2)
+                x = FlxG.width - width*2;
             if(this.x <= 0)
                 this.x = 0;
-            if(this.y >= FlxG.height - height)
-                this.y = FlxG.height - height;
+            if(this.y >= FlxG.height - height*2)
+                this.y = FlxG.height - height*2;
             if(this.y <= 0)
                 this.y = 0;
         }

@@ -8,34 +8,48 @@ package
 
         public var table:FlxSprite;
         public var table_x:Number = 150;
-        public var table_y:Number = 180;
+        public var table_y:Number = 190;
         public var player:Player;
         public var potpourri:FlxGroup;
+        public var bulbs:FlxGroup;
+        public var carrying_p:Boolean = false;
+        public var carrying_b:Boolean = false;
+        public var stuffing:Number = 0;
+        public var bulbs_stuffed:Number = 0;
+        public var stuff_lock:Boolean = false;
+
+        public var mouse:FlxSprite;
 
         override public function create():void
         {
-            FlxG.mouse.show();
             FlxG.bgColor = 0xff458A00;
 
             table = new FlxSprite(table_x,table_y);
             table.makeGraphic(100,10);
             table.immovable = true;
-            table.solid = true;
             add(table);
 
-            player = new Player(100,100);
+            player = new Player(100,FlxG.height-50);
             player.scale.x = 2;
             player.scale.y = 2;
             add(player);
 
             potpourri = new FlxGroup();
+            bulbs = new FlxGroup();
 
-            for(var i:Number = 0; i < 20; i++){
-                var rand:Number = (Math.random()*table.width)+table_x;
+            for(var i:Number = 0; i < 30; i++){
                 var p:Potpourri = new Potpourri(table);
                 add(p);
                 potpourri.add(p);
             }
+
+            var b:Bulb = new Bulb(table);
+            add(b);
+            bulbs.add(b);
+
+            mouse = new FlxSprite(FlxG.mouse.x,FlxG.mouse.y);
+            mouse.makeGraphic(5,5);
+            add(mouse);
 
             debugText = new FlxText(10,10,100,"");
             add(debugText);
@@ -45,35 +59,53 @@ package
         override public function update():void
         {
             super.update();
-            player.update()
-            FlxG.collide();
-            FlxG.collide(potpourri,table,collisionCallback);
-            borderCollide(table);
-            borderCollide(player);
+            mouse.x = FlxG.mouse.x;
+            mouse.y = FlxG.mouse.y;
 
-            for(var i:Number = 0; i < potpourri.length; i++){
-                borderCollide(potpourri.members[i]);
+            FlxG.overlap(potpourri,bulbs,fillBulb);
+            FlxG.collide(potpourri,table);
+            FlxG.collide(bulbs,table);
+            FlxG.collide(player,table);
+
+            stuff_lock = false;
+
+            if(FlxG.mouse.pressed()){
+                if(carrying_p == false){
+                    FlxG.overlap(potpourri,mouse,carryPotpourri);
+                }
+                if(carrying_b == false){
+                    FlxG.overlap(bulbs,mouse,carryBulbs);
+                }
             }
 
-        }
-
-        public function collisionCallback(p:FlxGroup,t:FlxSprite):void{
-            for(var i:Number = 0; i < p.length; i++){
-                p.members[i].velocity = 0;
+            if(FlxG.mouse.pressed() == false){
+                carrying_p = false;
+                carrying_b = false;
             }
-            debugText.text = "collide";
+
+            debugText.text = "Stuffing: " + stuffing.toString() + " Bulbs stuffed: " + bulbs_stuffed.toString();
         }
 
-        //*2 because of player sprite scaling
-        public function borderCollide(_this:FlxSprite):void{
-            if(_this.x >= FlxG.width - _this.width*2)
-                _this.x = FlxG.width - _this.width*2;
-            if(_this.x <= 0)
-                _this.x = 0;
-            if(_this.y >= FlxG.height - _this.height*2)
-                _this.y = FlxG.height - _this.height*2;
-            if(_this.y <= 0)
-                _this.y = 0;
+        public function fillBulb(p:FlxSprite,b:FlxSprite):void{
+            p.kill();
+            if(!stuff_lock){
+                stuff_lock = true;
+                if(stuffing < 5){
+                    stuffing++;
+                } else {
+                    bulbs_stuffed++;
+                }
+            }
+        }
+
+        public function carryPotpourri(p:Potpourri,m:FlxSprite):void{
+            p.carry();
+            carrying_p = true;
+        }
+
+        public function carryBulbs(b:Bulb,m:FlxSprite):void{
+            b.carry();
+            carrying_b = true;
         }
     }
 }
