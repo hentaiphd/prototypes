@@ -3,14 +3,19 @@ package
     import org.flixel.*;
 
     public class Bulb extends FlxSprite{
+        public var colors:Array = [0xffB45ED3,0xff5E81D3,0xff5ED375,0xffFCDB00];
         public var table:FlxSprite;
         public var held:Boolean = false;
+        public var stuffing:Number = 0;
 
         public function Bulb(t:FlxSprite):void{
             table = t;
-            //var rand:Number = table.x+(Math.random()*(table.width/2));
-            super(table.x,30);
-            this.color = 0xff39E8F8;
+            var randx:Number = Math.random()*(table.x+table.width);
+            var randy:Number = Math.random()*150;
+            super(randx,randy)
+
+            var c_rand:Number = Math.floor(Math.random()*colors.length);
+            this.color = colors[c_rand];
             this.makeGraphic(10,10);
         }
 

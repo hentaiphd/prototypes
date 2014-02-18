@@ -7,7 +7,7 @@ package
         public var debugText:FlxText;
 
         public var table:FlxSprite;
-        public var table_x:Number = 150;
+        public var table_x:Number = 200;
         public var table_y:Number = 190;
         public var player:Player;
         public var potpourri:FlxGroup;
@@ -19,6 +19,7 @@ package
         public var stuff_lock:Boolean = false;
         public var p_num:Number = 10;
 
+        public var basket:FlxSprite;
         public var mouse:FlxSprite;
 
         override public function create():void
@@ -26,11 +27,16 @@ package
             FlxG.bgColor = 0xff458A00;
 
             table = new FlxSprite(table_x,table_y);
-            table.makeGraphic(100,10);
+            table.makeGraphic(100,100);
             table.immovable = true;
             add(table);
 
-            player = new Player(100,FlxG.height-50);
+            basket = new FlxSprite(10,FlxG.height-50);
+            basket.makeGraphic(100,100);
+            basket.immovable = true;
+            add(basket);
+
+            player = new Player(120,FlxG.height-50);
             player.scale.x = 2;
             player.scale.y = 2;
             add(player);
@@ -42,11 +48,11 @@ package
                 var p:Potpourri = new Potpourri(table);
                 add(p);
                 potpourri.add(p);
-            }
 
-            var b:Bulb = new Bulb(table);
-            add(b);
-            bulbs.add(b);
+                var b:Bulb = new Bulb(basket);
+                add(b);
+                bulbs.add(b);
+            }
 
             mouse = new FlxSprite(FlxG.mouse.x,FlxG.mouse.y);
             mouse.makeGraphic(5,5);
@@ -74,8 +80,11 @@ package
             FlxG.overlap(potpourri,bulbs,fillBulb);
             FlxG.collide(potpourri,table);
             FlxG.collide(potpourri,potpourri);
+            FlxG.collide(bulbs,bulbs);
             FlxG.collide(bulbs,table);
             FlxG.collide(player,table);
+            FlxG.collide(bulbs,basket);
+            FlxG.collide(player,basket);
 
             stuff_lock = false;
 
@@ -93,19 +102,20 @@ package
                 carrying_b = false;
             }
 
-            debugText.text = "Stuffing: " + stuffing.toString() + " Bulbs stuffed: " + bulbs_stuffed.toString();
+            debugText.text = "Bulbs stuffed: " + bulbs_stuffed.toString();
         }
 
-        public function fillBulb(p:FlxSprite,b:FlxSprite):void{
+        public function fillBulb(p:FlxSprite,b:Bulb):void{
             p.kill();
             potpourri.remove(p,true);
             if(!stuff_lock){
                 stuff_lock = true;
-                if(stuffing < 5){
-                    stuffing++;
+                if(b.stuffing < 5){
+                    b.stuffing++;
                 } else {
                     bulbs_stuffed++;
-                    stuffing = 0;
+                    b.kill();
+                    bulbs.remove(b,true);
                 }
             }
         }
