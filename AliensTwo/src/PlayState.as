@@ -17,6 +17,7 @@ package
         public var stuffing:Number = 0;
         public var bulbs_stuffed:Number = 0;
         public var stuff_lock:Boolean = false;
+        public var p_num:Number = 10;
 
         public var mouse:FlxSprite;
 
@@ -37,7 +38,7 @@ package
             potpourri = new FlxGroup();
             bulbs = new FlxGroup();
 
-            for(var i:Number = 0; i < 30; i++){
+            for(var i:Number = 0; i < p_num; i++){
                 var p:Potpourri = new Potpourri(table);
                 add(p);
                 potpourri.add(p);
@@ -62,8 +63,17 @@ package
             mouse.x = FlxG.mouse.x;
             mouse.y = FlxG.mouse.y;
 
+            if(potpourri.length == 0){
+                for(var i:Number = 0; i < p_num; i++){
+                    var p:Potpourri = new Potpourri(table);
+                    add(p);
+                    potpourri.add(p);
+                }
+            }
+
             FlxG.overlap(potpourri,bulbs,fillBulb);
             FlxG.collide(potpourri,table);
+            FlxG.collide(potpourri,potpourri);
             FlxG.collide(bulbs,table);
             FlxG.collide(player,table);
 
@@ -88,12 +98,14 @@ package
 
         public function fillBulb(p:FlxSprite,b:FlxSprite):void{
             p.kill();
+            potpourri.remove(p,true);
             if(!stuff_lock){
                 stuff_lock = true;
                 if(stuffing < 5){
                     stuffing++;
                 } else {
                     bulbs_stuffed++;
+                    stuffing = 0;
                 }
             }
         }

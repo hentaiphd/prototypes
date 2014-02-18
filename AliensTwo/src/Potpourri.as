@@ -9,8 +9,9 @@ package
 
         public function Potpourri(t:FlxSprite):void{
             table = t;
-            var rand:Number = (table.x+50)+(Math.random()*(table.width/2));
-            super(rand,30);
+            var randx:Number = (table.x+40)+(Math.random()*(table.width/2));
+            var randy:Number = Math.random()*(table.y-10);
+            super(randx,randy);
 
             var c_rand:Number = Math.floor(Math.random()*colors.length);
             this.color = colors[c_rand];
