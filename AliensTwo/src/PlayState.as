@@ -11,7 +11,6 @@ package
         public var table:FlxSprite;
         public var player:Player;
         public var potpourri:FlxGroup;
-        public var bulbs:FlxGroup;
         public var carrying_p:Boolean = false;
         public var carrying_b:Boolean = false;
         public var stuffing:Number = 0;
@@ -21,6 +20,7 @@ package
 
         public var basket:FlxSprite;
         public var mouse:FlxSprite;
+        public var bulb:Bulb = null;
 
         override public function create():void
         {
@@ -28,25 +28,19 @@ package
 
             table = new FlxSprite(170,150);
             table.loadGraphic(TableImg,false,false,138,90);
-            //table.scale.x = 3;
-            //table.scale.y = 3;
             table.immovable = true;
             add(table);
 
             basket = new FlxSprite(50,170);
             basket.loadGraphic(BasketImg,false,false,57,58);
-            //basket.scale.x = 2;
-            //basket.scale.y = 2;
-            //basket.immovable = true;
             add(basket);
 
             player = new Player(120,FlxG.height-50);
-            player.scale.x = 2;
-            player.scale.y = 2;
+            player.scale.x = 3;
+            player.scale.y = 3;
             add(player);
 
             potpourri = new FlxGroup();
-            bulbs = new FlxGroup();
 
             for(var i:Number = 0; i < p_num; i++){
                 var p:Potpourri = new Potpourri(table);
@@ -77,31 +71,36 @@ package
                 }
             }
 
-            FlxG.overlap(potpourri,bulbs,fillBulb);
             FlxG.collide(potpourri,table);
             FlxG.collide(potpourri,potpourri);
-            FlxG.collide(bulbs,bulbs);
-            FlxG.collide(bulbs,table);
             FlxG.overlap(player,table);
-            FlxG.overlap(basket,player,grabBulb);
+
+            if(bulb != null){
+                FlxG.overlap(bulb,table,bulbOnTable);
+                FlxG.overlap(potpourri,bulb,fillBulb);
+            }
 
             stuff_lock = false;
 
             if(FlxG.mouse.pressed()){
+                FlxG.overlap(basket,player,grabBulb);
+
                 if(carrying_p == false){
                     FlxG.overlap(potpourri,mouse,carryPotpourri);
-                }
-                if(carrying_b == false){
-                    FlxG.overlap(bulbs,mouse,carryBulbs);
                 }
             }
 
             if(FlxG.mouse.pressed() == false){
                 carrying_p = false;
-                carrying_b = false;
             }
 
             debugText.text = "Bulbs stuffed: " + bulbs_stuffed.toString();
+
+            if(bulb != null){
+                if(bulb.held){
+                    bulb.carrying(player.x,player.y);
+                }
+            }
         }
 
         public function fillBulb(p:FlxSprite,b:Bulb):void{
@@ -113,28 +112,28 @@ package
                     b.stuffing++;
                 } else {
                     bulbs_stuffed++;
-                    b.kill();
-                    bulbs.remove(b,true);
+                    bulb.kill();
+                    bulb = null;
                 }
             }
         }
 
-        public function grabBulb(basket:FlxSprite,player:Player):void{
-            if(FlxG.mouse.pressed()){
-                var b:Bulb = new Bulb(basket,player.x,player.y);
-                add(b);
-                bulbs.add(b);
+        public function bulbOnTable(b:Bulb,t:FlxSprite):void{
+            if(!b.held){
+               b.carrying(t.x+10,t.y-10);
+            }
+        }
+
+        public function grabBulb(b:FlxSprite,p:Player):void{
+            if(bulb == null){
+                bulb = new Bulb(b,p.x,p.y);
+                add(bulb);
             }
         }
 
         public function carryPotpourri(p:Potpourri,m:FlxSprite):void{
             p.carry();
             carrying_p = true;
-        }
-
-        public function carryBulbs(b:Bulb,m:FlxSprite):void{
-            b.carry();
-            carrying_b = true;
         }
     }
 }
