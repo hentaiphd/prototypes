@@ -4,11 +4,11 @@ package
 
     public class PlayState extends FlxState
     {
+        [Embed(source="../assets/table.png")] private var TableImg:Class;
+        [Embed(source="../assets/basket.png")] private var BasketImg:Class;
         public var debugText:FlxText;
 
         public var table:FlxSprite;
-        public var table_x:Number = 200;
-        public var table_y:Number = 190;
         public var player:Player;
         public var potpourri:FlxGroup;
         public var bulbs:FlxGroup;
@@ -26,14 +26,18 @@ package
         {
             FlxG.bgColor = 0xff458A00;
 
-            table = new FlxSprite(table_x,table_y);
-            table.makeGraphic(100,100);
+            table = new FlxSprite(170,150);
+            table.loadGraphic(TableImg,false,false,138,90);
+            //table.scale.x = 3;
+            //table.scale.y = 3;
             table.immovable = true;
             add(table);
 
-            basket = new FlxSprite(10,FlxG.height-50);
-            basket.makeGraphic(100,100);
-            basket.immovable = true;
+            basket = new FlxSprite(50,170);
+            basket.loadGraphic(BasketImg,false,false,57,58);
+            //basket.scale.x = 2;
+            //basket.scale.y = 2;
+            //basket.immovable = true;
             add(basket);
 
             player = new Player(120,FlxG.height-50);
@@ -48,10 +52,6 @@ package
                 var p:Potpourri = new Potpourri(table);
                 add(p);
                 potpourri.add(p);
-
-                var b:Bulb = new Bulb(basket);
-                add(b);
-                bulbs.add(b);
             }
 
             mouse = new FlxSprite(FlxG.mouse.x,FlxG.mouse.y);
@@ -82,9 +82,8 @@ package
             FlxG.collide(potpourri,potpourri);
             FlxG.collide(bulbs,bulbs);
             FlxG.collide(bulbs,table);
-            FlxG.collide(player,table);
-            FlxG.collide(bulbs,basket);
-            FlxG.collide(player,basket);
+            FlxG.overlap(player,table);
+            FlxG.overlap(basket,player,grabBulb);
 
             stuff_lock = false;
 
@@ -117,6 +116,14 @@ package
                     b.kill();
                     bulbs.remove(b,true);
                 }
+            }
+        }
+
+        public function grabBulb(basket:FlxSprite,player:Player):void{
+            if(FlxG.mouse.pressed()){
+                var b:Bulb = new Bulb(basket,player.x,player.y);
+                add(b);
+                bulbs.add(b);
             }
         }
 

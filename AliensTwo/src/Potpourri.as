@@ -9,7 +9,7 @@ package
 
         public function Potpourri(t:FlxSprite):void{
             table = t;
-            var randx:Number = (table.x+40)+(Math.random()*(table.width/2));
+            var randx:Number = table.x+(Math.random()*table.width);
             var randy:Number = Math.random()*(table.y-10);
             super(randx,randy);
 

@@ -3,20 +3,31 @@ package
     import org.flixel.*;
 
     public class Bulb extends FlxSprite{
+        [Embed(source="../assets/bulb1.png")] private var Bulb1:Class;
+        [Embed(source="../assets/bulb2.png")] private var Bulb2:Class;
+        [Embed(source="../assets/bulb3.png")] private var Bulb3:Class;
+
         public var colors:Array = [0xffB45ED3,0xff5E81D3,0xff5ED375,0xffFCDB00];
         public var table:FlxSprite;
         public var held:Boolean = false;
         public var stuffing:Number = 0;
 
-        public function Bulb(t:FlxSprite):void{
-            table = t;
-            var randx:Number = Math.random()*(table.x+table.width);
-            var randy:Number = Math.random()*150;
-            super(randx,randy)
+        public var img:Array = [Bulb1,Bulb2,Bulb3];
 
-            var c_rand:Number = Math.floor(Math.random()*colors.length);
-            this.color = colors[c_rand];
-            this.makeGraphic(10,10);
+        public function Bulb(t:FlxSprite,x:Number,y:Number):void{
+            table = t;
+            //var randx:Number = table.x+(Math.random()*table.width);
+            //var randy:Number = Math.random()*150;
+            super(x,y)
+
+            //var c_rand:Number = Math.floor(Math.random()*colors.length);
+            //this.color = colors[c_rand];
+            //this.makeGraphic(10,10);
+
+            var i_rand:Number = Math.floor(Math.random()*2);
+            this.loadGraphic(img[i_rand],false,false,7,7);
+            this.scale.x = 2;
+            this.scale.y = 2;
         }
 
         override public function update():void{
