@@ -12,6 +12,9 @@ package
         [Embed(source="../assets/mom.png")] private var MomImg:Class;
         [Embed(source="../assets/aunt1.png")] private var Aunt1Img:Class;
         [Embed(source="../assets/aunt2.png")] private var Aunt2Img:Class;
+        [Embed(source="../assets/fullbulb1.png")] private var FullBulb1:Class;
+        [Embed(source="../assets/fullbulb2.png")] private var FullBulb2:Class;
+        [Embed(source="../assets/fullbulb3.png")] private var FullBulb3:Class;
         public var bulbText:FlxText;
         public var timeText:FlxText;
 
@@ -35,8 +38,14 @@ package
         public var aunt2:FlxSprite;
         public var table_stuff:FlxSprite;
 
+        public var img_full:Array = [FullBulb1,FullBulb2,FullBulb3];
+
         public var frames:Number = 0;
         public var timeFrame:Number = 0;
+
+        public var decorate:Boolean = false;
+
+        public var msgText:FlxText;
 
         override public function create():void
         {
@@ -96,6 +105,10 @@ package
             add(bulbText);
             timeText = new FlxText(10,20,FlxG.width,"");
             add(timeText);
+            msgText = new FlxText(0,210,FlxG.width,"");
+            //msgText.size = 16;
+            msgText.alignment = "center";
+            add(msgText);
 
         }
 
@@ -153,6 +166,28 @@ package
                 if(bulb.held){
                     bulb.carrying(player.x,player.y);
                 }
+
+                if(bulb.y > FlxG.height-10){
+                    bulb.kill()
+                    bulb = null;
+                    msgText.text = "Oh no! You broke a bulb!!";
+                }
+            }
+
+            if(msgText.text != ""){
+                if(timeFrame%3 == 0){
+                    msgText.text = "";
+                }
+            }
+
+            if(decorate == true){
+                msgText.text = "Click where you'd like to place the bulb on the tree.";
+                if(FlxG.mouse.justPressed()){
+                    //if(FlxG.overlap(new FlxSprite(FlxG.mouse.x,FlxG.mouse.y),tree)){
+                        Decorate(FlxG.mouse.x,FlxG.mouse.y);
+                    //}
+                    decorate = false;
+                }
             }
         }
 
@@ -165,6 +200,7 @@ package
                     b.stuffing++;
                 } else {
                     bulbs_stuffed++;
+                    decorate = true;
                     bulb.kill();
                     bulb = null;
                 }
@@ -187,6 +223,13 @@ package
         public function carryPotpourri(p:Potpourri,m:FlxSprite):void{
             p.carry();
             carrying_p = true;
+        }
+
+        public function Decorate(x:Number,y:Number):void{
+            var fbulb:FlxSprite = new FlxSprite(x,y);
+            var i_rand:Number = Math.floor(Math.random()*2);
+            fbulb.loadGraphic(img_full[i_rand],false,false,10,10);
+            add(fbulb);
         }
     }
 }
