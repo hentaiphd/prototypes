@@ -19,9 +19,7 @@ package
             super(x,y)
 
             var i_rand:Number = Math.floor(Math.random()*2);
-            this.loadGraphic(img[i_rand],false,false,7,7);
-            this.scale.x = 2;
-            this.scale.y = 2;
+            this.loadGraphic(img[i_rand],false,false,10,10);
         }
 
         override public function update():void{

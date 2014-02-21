@@ -9,6 +9,9 @@ package
         [Embed(source="../assets/bg.png")] private var BgImg:Class;
         [Embed(source="../assets/nana.png")] private var NanaImg:Class;
         [Embed(source="../assets/tablestuff.png")] private var TableStuffImg:Class;
+        [Embed(source="../assets/mom.png")] private var MomImg:Class;
+        [Embed(source="../assets/aunt1.png")] private var Aunt1Img:Class;
+        [Embed(source="../assets/aunt2.png")] private var Aunt2Img:Class;
         public var bulbText:FlxText;
         public var timeText:FlxText;
 
@@ -27,6 +30,9 @@ package
         public var bulb:Bulb = null;
         public var bg:FlxSprite;
         public var nana:FlxSprite;
+        public var mom:FlxSprite;
+        public var aunt1:FlxSprite;
+        public var aunt2:FlxSprite;
         public var table_stuff:FlxSprite;
 
         public var frames:Number = 0;
@@ -39,6 +45,18 @@ package
             bg = new FlxSprite(0,0);
             bg.loadGraphic(BgImg,false,false,320,240);
             add(bg);
+
+            mom = new FlxSprite(50,50);
+            mom.loadGraphic(MomImg,false,false,37,126);
+            add(mom);
+
+            aunt1 = new FlxSprite(200,50);
+            aunt1.loadGraphic(Aunt1Img,false,true,30,124);
+            add(aunt1);
+
+            aunt2 = new FlxSprite(250,50);
+            aunt2.loadGraphic(Aunt2Img,false,true,29,124);
+            add(aunt2);
 
             table = new FlxSprite(170,160);
             table.loadGraphic(TableImg,false,false,120,54);
@@ -55,7 +73,7 @@ package
             basket.loadGraphic(BasketImg,false,false,42,25);
             add(basket);
 
-            player = new Player(70,120);
+            player = new Player(120,120);
             add(player);
 
             nana = new FlxSprite(30,85);
