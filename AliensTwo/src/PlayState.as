@@ -6,7 +6,9 @@ package
     {
         [Embed(source="../assets/table.png")] private var TableImg:Class;
         [Embed(source="../assets/basket.png")] private var BasketImg:Class;
-        [Embed(source="../assets/tree.png")] private var TreeImg:Class;
+        [Embed(source="../assets/bg.png")] private var BgImg:Class;
+        [Embed(source="../assets/nana.png")] private var NanaImg:Class;
+        [Embed(source="../assets/tablestuff.png")] private var TableStuffImg:Class;
         public var bulbText:FlxText;
         public var timeText:FlxText;
 
@@ -23,7 +25,9 @@ package
         public var basket:FlxSprite;
         public var mouse:FlxSprite;
         public var bulb:Bulb = null;
-        public var tree:FlxSprite;
+        public var bg:FlxSprite;
+        public var nana:FlxSprite;
+        public var table_stuff:FlxSprite;
 
         public var frames:Number = 0;
         public var timeFrame:Number = 0;
@@ -32,29 +36,31 @@ package
         {
             FlxG.bgColor = 0xff458A00;
 
-            tree = new FlxSprite(100,70);
-            tree.loadGraphic(TreeImg,false,false,87,86);
-            tree.scale.x = 2;
-            tree.scale.y = 2;
-            add(tree);
+            bg = new FlxSprite(0,0);
+            bg.loadGraphic(BgImg,false,false,320,240);
+            add(bg);
 
-            table = new FlxSprite(170,150);
-            table.loadGraphic(TableImg,false,false,138,66);
-            //table.scale.x = .5;
-            //table.scale.y = .5;
+            table = new FlxSprite(170,160);
+            table.loadGraphic(TableImg,false,false,120,54);
             table.immovable = true;
+            //table.frameHeight = 40;
             add(table);
 
-            basket = new FlxSprite(-5,140);
-            basket.loadGraphic(BasketImg,false,false,114,116);
-            //basket.scale.x = .5;
-            //basket.scale.y = .5;
+            table_stuff = new FlxSprite(225,145);
+            table_stuff.loadGraphic(TableStuffImg,false,false,49,24);
+            table_stuff.immovable = true;
+            add(table_stuff);
+
+            basket = new FlxSprite(70,185);
+            basket.loadGraphic(BasketImg,false,false,42,25);
             add(basket);
 
-            player = new Player(120,FlxG.height-50);
-            player.scale.x = 2;
-            player.scale.y = 2;
+            player = new Player(70,120);
             add(player);
+
+            nana = new FlxSprite(30,85);
+            nana.loadGraphic(NanaImg,false,false,31,126)
+            add(nana);
 
             potpourri = new FlxGroup();
 

@@ -3,7 +3,7 @@ package
     import org.flixel.*;
 
     public class Player extends FlxSprite{
-        [Embed(source="../assets/girl_sprite.png")] private var ImgPlayer:Class;
+        [Embed(source="../assets/girl.png")] private var ImgPlayer:Class;
 
         private var runSpeed:int = 2;
         public var grabbing:Boolean = false;
@@ -22,9 +22,9 @@ package
 
         public function Player(x:int,y:int):void{
             super(x,y);
-            loadGraphic(ImgPlayer, true, true, 34, 36, true);
-            frameWidth = 34;
-            frameHeight = 36;
+            loadGraphic(ImgPlayer, true, true, 31, 94, true);
+            frameWidth = 31;
+            frameHeight = 94;
             width = 10;
 
             addAnimation("run", [5,6,7,8], 8, true);
@@ -35,12 +35,13 @@ package
             addAnimation("falling", [14, 15, 16], 7, false);
 
             drag.x = runSpeed*8;
-            drag.y = runSpeed*3;
         }
 
         override public function update():void{
             super.update();
             borderCollide();
+
+            acceleration.x = 0;
 
             if (this.no_control) return;
             if(FlxG.keys.DOWN && this.grabDown){
@@ -105,12 +106,12 @@ package
         }
 
         public function borderCollide():void{
-            if(x >= FlxG.width - width*2)
-                x = FlxG.width - width*2;
+            if(x >= FlxG.width - width)
+                x = FlxG.width - width;
             if(this.x <= 0)
                 this.x = 0;
-            if(this.y >= FlxG.height - height*2)
-                this.y = FlxG.height - height*2;
+            if(this.y >= FlxG.height - height)
+                this.y = FlxG.height - height;
             if(this.y <= 0)
                 this.y = 0;
         }

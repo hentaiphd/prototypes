@@ -5,11 +5,11 @@ package
     public class Potpourri extends FlxSprite{
         public var table:FlxSprite;
         public var held:Boolean = false;
-        public var colors:Array = [0xffB45ED3,0xff5E81D3,0xff5ED375,0xffFCDB00];
+        public var colors:Array = [0xff9f6b72,0xff76846a,0xff27375f,0xff4a4038];
 
         public function Potpourri(t:FlxSprite):void{
             table = t;
-            var randx:Number = table.x+(Math.random()*table.width);
+            var randx:Number = (table.x+7)+(Math.random()*50);
             var randy:Number = Math.random()*(table.y-10);
             super(randx,randy);
 
