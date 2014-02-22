@@ -7,6 +7,7 @@ package
         [Embed(source="../assets/table.png")] private var TableImg:Class;
         [Embed(source="../assets/basket.png")] private var BasketImg:Class;
         [Embed(source="../assets/bg.png")] private var BgImg:Class;
+        [Embed(source="../assets/tree.png")] private var TreeImg:Class;
         [Embed(source="../assets/nana.png")] private var NanaImg:Class;
         [Embed(source="../assets/tablestuff.png")] private var TableStuffImg:Class;
         [Embed(source="../assets/mom.png")] private var MomImg:Class;
@@ -21,6 +22,7 @@ package
         public var table:FlxSprite;
         public var player:Player;
         public var potpourri:FlxGroup;
+        public var full_bulbs:FlxGroup;
         public var carrying_p:Boolean = false;
         public var carrying_b:Boolean = false;
         public var stuffing:Number = 0;
@@ -37,6 +39,7 @@ package
         public var aunt1:FlxSprite;
         public var aunt2:FlxSprite;
         public var table_stuff:FlxSprite;
+        public var tree:FlxSprite;
 
         public var img_full:Array = [FullBulb1,FullBulb2,FullBulb3];
 
@@ -54,6 +57,10 @@ package
             bg = new FlxSprite(0,0);
             bg.loadGraphic(BgImg,false,false,320,240);
             add(bg);
+
+            tree = new FlxSprite(100,10);
+            tree.loadGraphic(TreeImg,false,false,120,143);
+            add(tree);
 
             mom = new FlxSprite(50,50);
             mom.loadGraphic(MomImg,false,false,37,126);
@@ -90,6 +97,7 @@ package
             add(nana);
 
             potpourri = new FlxGroup();
+            full_bulbs = new FlxGroup();
 
             for(var i:Number = 0; i < p_num; i++){
                 var p:Potpourri = new Potpourri(table);
@@ -175,20 +183,31 @@ package
             }
 
             if(msgText.text != ""){
-                if(timeFrame%3 == 0){
+                if(timeFrame%5 == 0){
                     msgText.text = "";
                 }
             }
 
             if(decorate == true){
-                msgText.text = "Click where you'd like to place the bulb on the tree.";
+                msgText.text = "Click on the tree to hang your bulb.";
                 if(FlxG.mouse.justPressed()){
-                    //if(FlxG.overlap(new FlxSprite(FlxG.mouse.x,FlxG.mouse.y),tree)){
-                        Decorate(FlxG.mouse.x,FlxG.mouse.y);
-                    //}
+                    Decorate(FlxG.mouse.x,FlxG.mouse.y);
                     decorate = false;
                 }
             }
+
+            /*if(full_bulbs.length > 0){
+                FlxG.overlap(full_bulbs.members.last,tree,holdDecor);
+                full_bulbs.members.last.acceleration = 200;
+                if(full_bulbs.members.last.y > FlxG.height-10){
+                    msgText.text = "Oh no! You broke a bulb!!";
+                    full_bulbs.members.last.destroy();
+                }
+            }*/
+        }
+
+        public function holdDecor(b:FlxSprite,t:FlxSprite):void{
+            b.acceleration.y = 0;
         }
 
         public function fillBulb(p:FlxSprite,b:Bulb):void{
@@ -229,6 +248,7 @@ package
             var fbulb:FlxSprite = new FlxSprite(x,y);
             var i_rand:Number = Math.floor(Math.random()*2);
             fbulb.loadGraphic(img_full[i_rand],false,false,10,10);
+            full_bulbs.add(fbulb);
             add(fbulb);
         }
     }
