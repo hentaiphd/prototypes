@@ -146,10 +146,10 @@ package
 
             FlxG.collide(potpourri,table);
             FlxG.collide(potpourri,potpourri);
-            FlxG.overlap(player,table);
+            FlxG.collide(player,table);
 
             if(bulb != null){
-                FlxG.overlap(bulb,table,bulbOnTable);
+                FlxG.collide(bulb,table,bulbOnTable);
                 FlxG.overlap(potpourri,bulb,fillBulb);
             }
 
@@ -172,7 +172,12 @@ package
 
             if(bulb != null){
                 if(bulb.held){
-                    bulb.carrying(player.x,player.y);
+                    if(player.dir == "left"){
+                        bulb.carrying(player.x-10,player.y);
+                    } else {
+                        bulb.carrying(player.x+30,player.y);
+                    }
+
                 }
 
                 if(bulb.y > FlxG.height-10){
@@ -234,7 +239,12 @@ package
 
         public function grabBulb(b:FlxSprite,p:Player):void{
             if(bulb == null){
-                bulb = new Bulb(b,p.x,p.y);
+                if(player.dir == "left"){
+                    bulb = new Bulb(b,p.x-10,p.y);
+                } else {
+                    bulb = new Bulb(b,p.x+30,p.y);
+                }
+
                 add(bulb);
             }
         }

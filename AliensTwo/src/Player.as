@@ -19,20 +19,11 @@ package
         public var isMoving:Boolean = false;
         public var runFast:Boolean = false;
         public var dropping:Boolean = false;
+        public var dir:String = "";
 
         public function Player(x:int,y:int):void{
             super(x,y);
             loadGraphic(ImgPlayer, true, true, 31, 94, true);
-            frameWidth = 31;
-            frameHeight = 94;
-            width = 10;
-
-            addAnimation("run", [5,6,7,8], 8, true);
-            addAnimation("fastrun", [9,10,11,12,13], 8, true);
-            addAnimation("standing", [0]);
-            addAnimation("crouching", [1, 2], 7, false);
-            addAnimation("reaching", [17, 18], 7, false);
-            addAnimation("falling", [14, 15, 16], 7, false);
 
             drag.x = runSpeed*8;
         }
@@ -44,22 +35,17 @@ package
             acceleration.x = 0;
 
             if (this.no_control) return;
-            if(FlxG.keys.DOWN && this.grabDown){
-                play("crouching");
-            } else if(FlxG.keys.UP && !this.grabDown){
-                play("reaching");
+            if(FlxG.keys.LEFT) {
+                isMoving = true;
+                dir = "left";
+                this.runLeft();
+            } else if(FlxG.keys.RIGHT){
+                isMoving = true;
+                dir = "right";
+                this.runRight();
             } else {
-                if(FlxG.keys.LEFT) {
-                    isMoving = true;
-                    this.runLeft();
-                } else if(FlxG.keys.RIGHT){
-                    isMoving = true;
-                    this.runRight();
-                } else {
-                    isMoving = false;
-                    play("standing");
-                    running = false;
-                }
+                isMoving = false;
+                running = false;
             }
 
         }
@@ -67,21 +53,11 @@ package
         public function runLeft():void{
             facing = LEFT;
             x -= runSpeed;
-            if(this.runFast) {
-                play("fastrun");
-            } else {
-                play("run");
-            }
         }
 
         public function runRight():void{
             facing = RIGHT;
             x += runSpeed;
-            if(this.runFast) {
-                play("fastrun");
-            } else {
-                play("run");
-            }
         }
 
         public function decelerate():void{
@@ -89,17 +65,11 @@ package
                 drag.x += 200;
                 if (!this.fallen){
                     isMoving = true;
-                    if(this.runFast) {
-                        play("fastrun");
-                    } else {
-                        play("run");
-                    }
                 }
                 counter++;
             } else if (counter == 5) {
                 if (!this.fallen){
                     isMoving = false;
-                    play("standing");
                 }
                 counter = 0;
             }
