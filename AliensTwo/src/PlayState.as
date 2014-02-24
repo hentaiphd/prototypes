@@ -18,6 +18,8 @@ package
         [Embed(source="../assets/fullbulb3.png")] private var FullBulb3:Class;
         public var bulbText:FlxText;
         public var timeText:FlxText;
+        public var momText:FlxText;
+        public var familyText:FlxText;
 
         public var table:FlxSprite;
         public var player:Player;
@@ -40,6 +42,7 @@ package
         public var aunt2:FlxSprite;
         public var table_stuff:FlxSprite;
         public var tree:FlxSprite;
+        public var _floor:FlxSprite;
 
         public var img_full:Array = [FullBulb1,FullBulb2,FullBulb3];
 
@@ -53,6 +56,10 @@ package
         override public function create():void
         {
             FlxG.bgColor = 0xff458A00;
+
+            _floor = new FlxSprite(0,FlxG.height-5);
+            _floor.makeGraphic(FlxG.width,10);
+            add(_floor);
 
             bg = new FlxSprite(0,0);
             bg.loadGraphic(BgImg,false,false,320,240);
@@ -69,10 +76,12 @@ package
             aunt1 = new FlxSprite(200,50);
             aunt1.loadGraphic(Aunt1Img,false,true,30,124);
             add(aunt1);
+            aunt1.scale.x = -1;
 
             aunt2 = new FlxSprite(250,50);
             aunt2.loadGraphic(Aunt2Img,false,true,29,124);
             add(aunt2);
+            aunt2.scale.x = -1;
 
             table = new FlxSprite(170,160);
             table.loadGraphic(TableImg,false,false,120,54);
@@ -92,9 +101,16 @@ package
             player = new Player(120,120);
             add(player);
 
-            nana = new FlxSprite(30,85);
+            nana = new FlxSprite(260,100);
             nana.loadGraphic(NanaImg,false,false,31,126)
             add(nana);
+            nana.scale.x *= -1;
+
+            momText = new FlxText(10,30,200,"mom");
+            add(momText);
+
+            familyText = new FlxText(200,30,200,"fam");
+            add(familyText);
 
             potpourri = new FlxGroup();
             full_bulbs = new FlxGroup();
@@ -109,9 +125,9 @@ package
             mouse.makeGraphic(5,5);
             add(mouse);
 
-            bulbText = new FlxText(10,10,FlxG.width,"");
+            bulbText = new FlxText(10,FlxG.height-20,FlxG.width,"");
             add(bulbText);
-            timeText = new FlxText(10,20,FlxG.width,"");
+            timeText = new FlxText(10,FlxG.height-30,FlxG.width,"");
             add(timeText);
             msgText = new FlxText(0,210,FlxG.width,"");
             //msgText.size = 16;
@@ -129,8 +145,12 @@ package
                 timeFrame++;
             }
 
-            if(timeFrame == 200){
+            if(timeFrame == 100){
                 FlxG.switchState(new TextState("They broke all of your bulbs...",new MenuState()));
+            }
+
+            if(timeFrame == 10){
+
             }
 
             mouse.x = FlxG.mouse.x;
@@ -147,6 +167,7 @@ package
             FlxG.collide(potpourri,table);
             FlxG.collide(potpourri,potpourri);
             FlxG.collide(player,table);
+            FlxG.overlap(potpourri,_floor,potpourriFall);
 
             if(bulb != null){
                 FlxG.collide(bulb,table,bulbOnTable);
@@ -235,6 +256,11 @@ package
             if(!b.held){
                b.carrying(t.x+10,t.y-10);
             }
+        }
+
+        public function potpourriFall(p:FlxSprite,f:FlxSprite):void{
+            p.kill();
+            potpourri.remove(p,true);
         }
 
         public function grabBulb(b:FlxSprite,p:Player):void{

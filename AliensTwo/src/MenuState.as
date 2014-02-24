@@ -16,7 +16,7 @@ package{
             super.update();
 
             if(FlxG.keys.SPACE){
-                FlxG.switchState(new PlayState());
+                FlxG.switchState(new TextState("Honey, take this potpourri and stuff the empty Christmas bulbs.", new PlayState()));
             }
         }
     }
