@@ -5,6 +5,7 @@ package
     public class PlayState extends FlxState
     {
         [Embed(source="../assets/table.png")] private var TableImg:Class;
+        [Embed(source="../assets/mouse.png")] private var MouseImg:Class;
         [Embed(source="../assets/basket.png")] private var BasketImg:Class;
         [Embed(source="../assets/bg.png")] private var BgImg:Class;
         [Embed(source="../assets/tree.png")] private var TreeImg:Class;
@@ -16,6 +17,7 @@ package
         [Embed(source="../assets/fullbulb1.png")] private var FullBulb1:Class;
         [Embed(source="../assets/fullbulb2.png")] private var FullBulb2:Class;
         [Embed(source="../assets/fullbulb3.png")] private var FullBulb3:Class;
+        [Embed(source="../assets/clock.mp3")] private var ClockSound:Class;
         public var bulbText:FlxText;
         public var timeText:FlxText;
         public var momText:FlxText;
@@ -37,9 +39,17 @@ package
         public var bulb:Bulb = null;
         public var bg:FlxSprite;
         public var nana:FlxSprite;
+        public var nanapt:FlxPoint = new FlxPoint(260,100);
         public var mom:FlxSprite;
+        public var mompt:FlxPoint = new FlxPoint(50,50);
         public var aunt1:FlxSprite;
+        public var aunt1pt:FlxPoint = new FlxPoint(200,50);
         public var aunt2:FlxSprite;
+        public var aunt2pt:FlxPoint = new FlxPoint(250,50);
+
+        public var momTextBg:FlxSprite;
+        public var famTextBg:FlxSprite;
+
         public var table_stuff:FlxSprite;
         public var tree:FlxSprite;
         public var _floor:FlxSprite;
@@ -65,20 +75,32 @@ package
             bg.loadGraphic(BgImg,false,false,320,240);
             add(bg);
 
+            momTextBg = new FlxSprite(2,2);
+            momTextBg.makeGraphic(105,60,0xff5d5241);
+            add(momTextBg);
+            momText = new FlxText(10,5,100,"mom");
+            add(momText);
+
+            famTextBg = new FlxSprite(198,2);
+            famTextBg.makeGraphic(105,60,0xff5d5241);
+            add(famTextBg);
+            familyText = new FlxText(200,5,100,"fam");
+            add(familyText);
+
             tree = new FlxSprite(100,10);
             tree.loadGraphic(TreeImg,false,false,120,143);
             add(tree);
 
-            mom = new FlxSprite(50,50);
+            mom = new FlxSprite(mompt.x,mompt.y);
             mom.loadGraphic(MomImg,false,false,37,126);
             add(mom);
 
-            aunt1 = new FlxSprite(200,50);
+            aunt1 = new FlxSprite(aunt1pt.x, aunt1pt.y);
             aunt1.loadGraphic(Aunt1Img,false,true,30,124);
             add(aunt1);
             aunt1.scale.x = -1;
 
-            aunt2 = new FlxSprite(250,50);
+            aunt2 = new FlxSprite(aunt2pt.x, aunt2pt.y);
             aunt2.loadGraphic(Aunt2Img,false,true,29,124);
             add(aunt2);
             aunt2.scale.x = -1;
@@ -101,16 +123,10 @@ package
             player = new Player(120,120);
             add(player);
 
-            nana = new FlxSprite(260,100);
+            nana = new FlxSprite(nanapt.x, nanapt.y);
             nana.loadGraphic(NanaImg,false,false,31,126)
             add(nana);
             nana.scale.x *= -1;
-
-            momText = new FlxText(10,30,200,"mom");
-            add(momText);
-
-            familyText = new FlxText(200,30,200,"fam");
-            add(familyText);
 
             potpourri = new FlxGroup();
             full_bulbs = new FlxGroup();
@@ -122,18 +138,28 @@ package
             }
 
             mouse = new FlxSprite(FlxG.mouse.x,FlxG.mouse.y);
-            mouse.makeGraphic(5,5);
+            mouse.loadGraphic(MouseImg,false,false,6,8);
+            mouse.scale.x = 2;
+            mouse.scale.y = 2;
             add(mouse);
 
             bulbText = new FlxText(10,FlxG.height-20,FlxG.width,"");
             add(bulbText);
             timeText = new FlxText(10,FlxG.height-30,FlxG.width,"");
-            add(timeText);
+            //add(timeText);
             msgText = new FlxText(0,210,FlxG.width,"");
             //msgText.size = 16;
             msgText.alignment = "center";
             add(msgText);
 
+            if(FlxG.music == null){
+                FlxG.playMusic(ClockSound);
+            } else {
+                FlxG.music.resume();
+                if(!FlxG.music.active){
+                    FlxG.playMusic(ClockSound);
+                }
+            }
         }
 
         override public function update():void
@@ -145,13 +171,66 @@ package
                 timeFrame++;
             }
 
-            if(timeFrame == 100){
-                FlxG.switchState(new TextState("They broke all of your bulbs...",new MenuState()));
+            if(timeFrame > 0){
+                momText.text = "The man is an idiot. I'm not PRETENDING that she has asthma.";
+                familyText.text = "You're being irrational, Lisa! She's fine.";
             }
 
-            if(timeFrame == 10){
-
+            if(timeFrame > 10){
+                momText.text = "He's psychotic--he couldn't even handle his sales job.";
+                familyText.text = "You haven't worked since she was born, so you're not one to talk.";
             }
+
+            if(timeFrame > 20){
+                /*shake(mom,mompt,5);
+                shake(nana,nanapt,5);
+                shake(aunt1,aunt1pt,5);
+                shake(aunt2,aunt2pt,5);*/
+                //FlxG.shake(.0001);
+                momText.text = "I'm taking care of Mia by myself. How could I work?";
+                familyText.text = "Well then, why don't you TRY getting along with Bret?";
+            }
+
+            if(timeFrame > 30){
+                FlxG.shake(.001);
+                momText.text = "He is abusive!";
+                familyText.text = "You need a man to support you, Lisa. You and your daughter.";
+            }
+
+            if(timeFrame > 40){
+                FlxG.shake(.002);
+                momText.text = "We don't need him.";
+                familyText.text = "How are you going to put food on the table?";
+            }
+
+            if(timeFrame > 50){
+                FlxG.shake(.002);
+                momText.text = "I'll get a job. He also has to give me child support.";
+                familyText.text = "You're so selfish!";
+            }
+
+            if(timeFrame > 40){
+                FlxG.shake(.003);
+                momText.text = "How I raise my child is none of your business anyways!";
+                familyText.text = "You're not thinking about what's best for her--she should live with her father.";
+            }
+
+            if(timeFrame > 50){
+                FlxG.shake(.006);
+                momText.text = "He's not a good parent! I'm her mother!";
+                familyText.text = "You're crazy Lisa! And you're raising a brat!";
+            }
+
+            if(timeFrame > 60){
+                FlxG.shake(.006);
+                momText.text = "How can you say that about a child--you're the crazy ones!";
+                //familyText.text = "You're crazy Lisa! And you're raising a brat!";
+            }
+
+            if(timeFrame == 70){
+                FlxG.switchState(new TextState("GET OUT LISA! AND TAKE HER WITH YOU!","end 1"));
+            }
+
 
             mouse.x = FlxG.mouse.x;
             mouse.y = FlxG.mouse.y;
@@ -166,19 +245,18 @@ package
 
             FlxG.collide(potpourri,table);
             FlxG.collide(potpourri,potpourri);
-            FlxG.collide(player,table);
+            FlxG.collide(player,table,dropBulb);
+            FlxG.overlap(basket,player,grabBulb);
             FlxG.overlap(potpourri,_floor,potpourriFall);
 
             if(bulb != null){
-                FlxG.collide(bulb,table,bulbOnTable);
+                FlxG.collide(bulb,table);
                 FlxG.overlap(potpourri,bulb,fillBulb);
             }
 
             stuff_lock = false;
 
             if(FlxG.mouse.pressed()){
-                FlxG.overlap(basket,player,grabBulb);
-
                 if(carrying_p == false){
                     FlxG.overlap(potpourri,mouse,carryPotpourri);
                 }
@@ -236,6 +314,12 @@ package
             b.acceleration.y = 0;
         }
 
+        public function dropBulb(p:FlxSprite,t:FlxSprite):void{
+            if(bulb != null){
+                bulb.held = false;
+            }
+        }
+
         public function fillBulb(p:FlxSprite,b:Bulb):void{
             p.kill();
             potpourri.remove(p,true);
@@ -249,12 +333,6 @@ package
                     bulb.kill();
                     bulb = null;
                 }
-            }
-        }
-
-        public function bulbOnTable(b:Bulb,t:FlxSprite):void{
-            if(!b.held){
-               b.carrying(t.x+10,t.y-10);
             }
         }
 
@@ -278,6 +356,20 @@ package
         public function carryPotpourri(p:Potpourri,m:FlxSprite):void{
             p.carry();
             carrying_p = true;
+        }
+
+        public function shake(s:FlxSprite,p:FlxPoint,level:Number):void{
+            if(s.x < p.x+level){
+                s.x++;
+            } else {
+                s.x--;
+            }
+
+            if(s.y < p.y+level){
+                s.y++;
+            } else {
+                s.y--;
+            }
         }
 
         public function Decorate(x:Number,y:Number):void{

@@ -27,8 +27,9 @@ package
             borderCollide();
             acceleration.y = 100;
 
-            if(FlxG.mouse.justReleased()){
-                this.held = false;
+            if(!held){
+                this.x = 175;
+                this.y = 165;
             }
         }
 
