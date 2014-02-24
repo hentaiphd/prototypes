@@ -20,6 +20,8 @@ package
         public var runFast:Boolean = false;
         public var dropping:Boolean = false;
         public var dir:String = "";
+        public var moveleft:Boolean = false;
+        public var moveright:Boolean = false;
 
         public function Player(x:int,y:int):void{
             super(x,y);
@@ -32,21 +34,16 @@ package
             super.update();
             borderCollide();
 
-            acceleration.x = 0;
-
-            if (this.no_control) return;
-            if(FlxG.keys.LEFT) {
-                isMoving = true;
-                dir = "left";
-                this.runLeft();
-            } else if(FlxG.keys.RIGHT){
-                isMoving = true;
-                dir = "right";
-                this.runRight();
-            } else {
-                isMoving = false;
-                running = false;
+            if(moveleft){
+                this.facing = LEFT;
+                this.x--;
             }
+            if(moveright){
+                this.facing = RIGHT;
+                this.x++;
+            }
+
+            acceleration.x = 0;
 
         }
 

@@ -14,8 +14,7 @@ package
 
         public var img:Array = [Bulb1,Bulb2,Bulb3];
 
-        public function Bulb(t:FlxSprite,x:Number,y:Number):void{
-            table = t;
+        public function Bulb(x:Number,y:Number):void{
             super(x,y)
 
             var i_rand:Number = Math.floor(Math.random()*2);

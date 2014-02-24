@@ -41,7 +41,7 @@ package
 
         override public function endCallback():void {
             if(ending == "end 1"){
-                FlxG.switchState(new TextState("Why did you break my ornaments...","end 2"));
+                FlxG.switchState(new TextState("You stuffed 0 bulbs.","end 2"));
             } else if (ending == "end 2"){
                 FlxG.switchState(new MenuState());
             } else if(ending == "nope"){

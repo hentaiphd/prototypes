@@ -116,7 +116,7 @@ package
             table_stuff.immovable = true;
             add(table_stuff);
 
-            basket = new FlxSprite(70,185);
+            basket = new FlxSprite(20,185);
             basket.loadGraphic(BasketImg,false,false,42,25);
             add(basket);
 
@@ -246,7 +246,8 @@ package
             FlxG.collide(potpourri,table);
             FlxG.collide(potpourri,potpourri);
             FlxG.collide(player,table,dropBulb);
-            FlxG.overlap(basket,player,grabBulb);
+            FlxG.overlap(basket,mouse,grabBulb);
+            FlxG.overlap(basket,player,stopPlayer);
             FlxG.overlap(potpourri,_floor,potpourriFall);
 
             if(bulb != null){
@@ -270,15 +271,6 @@ package
             timeText.text = "Time: " + timeFrame.toString();
 
             if(bulb != null){
-                if(bulb.held){
-                    if(player.dir == "left"){
-                        bulb.carrying(player.x-10,player.y);
-                    } else {
-                        bulb.carrying(player.x+30,player.y);
-                    }
-
-                }
-
                 if(bulb.y > FlxG.height-10){
                     bulb.kill()
                     bulb = null;
@@ -314,10 +306,17 @@ package
             b.acceleration.y = 0;
         }
 
-        public function dropBulb(p:FlxSprite,t:FlxSprite):void{
+        public function stopPlayer(b:FlxSprite,p:Player):void{
+            p.moveleft = false;
+            p.moveright = true;
+        }
+
+        public function dropBulb(p:Player,t:FlxSprite):void{
             if(bulb != null){
+                add(bulb);
                 bulb.held = false;
             }
+            p.moveright = false;
         }
 
         public function fillBulb(p:FlxSprite,b:Bulb):void{
@@ -341,15 +340,12 @@ package
             potpourri.remove(p,true);
         }
 
-        public function grabBulb(b:FlxSprite,p:Player):void{
+        public function grabBulb(b:FlxSprite,p:FlxSprite):void{
             if(bulb == null){
-                if(player.dir == "left"){
-                    bulb = new Bulb(b,p.x-10,p.y);
-                } else {
-                    bulb = new Bulb(b,p.x+30,p.y);
+                if(FlxG.mouse.justPressed()){
+                    player.moveleft = true;
+                    bulb = new Bulb(table.x+15,table.y-30);
                 }
-
-                add(bulb);
             }
         }
 
