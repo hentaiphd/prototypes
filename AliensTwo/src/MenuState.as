@@ -78,7 +78,7 @@ package{
             }
 
             var t1:FlxText;
-            t1 = new FlxText(20,140,FlxG.width/2,"Walk to the box to grab a bulb. Click and drag potpourri to stuff the bulb.");
+            t1 = new FlxText(20,140,FlxG.width/2,"Click on the box to grab a bulb. Click and drag potpourri to stuff it.");
             add(t1);
 
             var t2:FlxText;
