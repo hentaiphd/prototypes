@@ -10,7 +10,7 @@ package{
         private var walkTarget:DHPoint;
         private var walkDirection:DHPoint = null;
         private var walking:Boolean = false;
-        private var walkSpeed:Number = 4;
+        private var walkSpeed:Number = 1;
         private var footPos:FlxPoint;
         private var heightDivisor:Number = 2;
         private var debugText:FlxText;
@@ -21,10 +21,10 @@ package{
         public function Player(x:Number, y:Number):void{
             super(x,y);
             loadGraphic(sprite_g, true, true, 14, 16, true);
-            this.offset.y = this.height - this.height/this.heightDivisor;
-            this.height /= this.heightDivisor;
-            this.width /= 2;
-            this.offset.x = this.width/2;
+            //this.offset.y = this.height - this.height/this.heightDivisor;
+            //this.height /= this.heightDivisor;
+            //this.width /= 2;
+            //this.offset.x = this.width/2;
             this.walkTarget = new DHPoint(0, 0);
 
             addAnimation("run", [2,3], 14, true);
@@ -38,13 +38,13 @@ package{
             super.update();
 
             pos = new FlxPoint(this.x, this.y);
-            footPos = new FlxPoint(this.x+this.width/2, this.y+this.height);
+            //footPos = new FlxPoint(this.x+this.width/2, this.y+this.height);
 
             if(this.shouldMove && FlxG.mouse.justPressed()){
                 walkTarget = new DHPoint(FlxG.mouse.x, FlxG.mouse.y);
                 this.walking = true;
-                walkDistance = new DHPoint(walkTarget.x-footPos.x, walkTarget.y-footPos.y)._length();
-                walkDirection = new DHPoint(walkTarget.x-footPos.x, walkTarget.y-footPos.y).normalized();
+                walkDistance = new DHPoint(walkTarget.x, walkTarget.y)._length();
+                walkDirection = new DHPoint(walkTarget.x, walkTarget.y).normalized();
             }
 
             if(this.shouldMove && walkDirection != null){
@@ -63,7 +63,7 @@ package{
                 }
             }
 
-            if (new DHPoint(walkTarget.x-footPos.x, walkTarget.y-footPos.y)._length() < 3) {
+            if (new DHPoint(walkTarget.x, walkTarget.y)._length() < 3) {
                 this.walking = false;
             }
 
@@ -97,7 +97,7 @@ package{
         }
 
         public function walk():void{
-            walkDirection = new DHPoint(walkTarget.x-footPos.x, walkTarget.y-footPos.y).normalized();
+            walkDirection = new DHPoint(walkTarget.x, walkTarget.y).normalized();
             var walkX:Number = this.walkDirection.x * this.walkSpeed;
             var walkY:Number = this.walkDirection.y * this.walkSpeed;
             this.x += walkX;

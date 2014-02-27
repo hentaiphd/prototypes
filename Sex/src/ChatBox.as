@@ -5,7 +5,8 @@ package{
 
         public function ChatBox(x:Number, y:Number):void{
             super(x,y);
-            makeGraphic(250,50,0x50000000);
+
+            makeGraphic(250,50,0x00000000);
         }
 
 
