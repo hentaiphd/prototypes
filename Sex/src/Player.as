@@ -43,8 +43,8 @@ package{
             if(this.shouldMove && FlxG.mouse.justPressed()){
                 walkTarget = new DHPoint(FlxG.mouse.x, FlxG.mouse.y);
                 this.walking = true;
-                walkDistance = new DHPoint(walkTarget.x, walkTarget.y)._length();
-                walkDirection = new DHPoint(walkTarget.x, walkTarget.y).normalized();
+                walkDistance = new DHPoint(walkTarget.x-pos.x, walkTarget.y-pos.y)._length();
+                walkDirection = new DHPoint(walkTarget.x-pos.x, walkTarget.y-pos.y).normalized();
             }
 
             if(this.shouldMove && walkDirection != null){
@@ -97,7 +97,7 @@ package{
         }
 
         public function walk():void{
-            walkDirection = new DHPoint(walkTarget.x, walkTarget.y).normalized();
+            walkDirection = new DHPoint(walkTarget.x-pos.x, walkTarget.y-pos.y).normalized();
             var walkX:Number = this.walkDirection.x * this.walkSpeed;
             var walkY:Number = this.walkDirection.y * this.walkSpeed;
             this.x += walkX;
