@@ -2,7 +2,6 @@ package{
     import org.flixel.*;
 
     public class Player extends FlxSprite{
-        [Embed(source = '../assets/boy.png')] public static var sprite_b:Class;
         [Embed(source = '../assets/girl.png')] public static var sprite_g:Class;
 
         public var runSpeed:Number = .1;
@@ -10,10 +9,12 @@ package{
         private var walkTarget:DHPoint;
         private var walkDirection:DHPoint = null;
         private var walking:Boolean = false;
-        private var walkSpeed:Number = 1;
+        private var walkSpeed:Number = 2;
         private var footPos:FlxPoint;
         private var heightDivisor:Number = 2;
         private var debugText:FlxText;
+        public var _health:Number = 100;
+        public var shooting:Boolean = false;
 
         public var shouldMove:Boolean = true;
         public var pos:FlxPoint;
@@ -26,67 +27,49 @@ package{
             //this.width /= 2;
             //this.offset.x = this.width/2;
             this.walkTarget = new DHPoint(0, 0);
-
-            addAnimation("run", [2,3], 14, true);
-            addAnimation("stand", [0]);
-            addAnimation("runBack", [4,5], 14, true);
-            addAnimation("standBack", [4]);
         }
 
 
         override public function update():void{
             super.update();
 
-            pos = new FlxPoint(this.x, this.y);
-            //footPos = new FlxPoint(this.x+this.width/2, this.y+this.height);
-
-            if(this.shouldMove && FlxG.mouse.justPressed()){
-                walkTarget = new DHPoint(FlxG.mouse.x, FlxG.mouse.y);
-                this.walking = true;
-                walkDistance = new DHPoint(walkTarget.x-pos.x, walkTarget.y-pos.y)._length();
-                walkDirection = new DHPoint(walkTarget.x-pos.x, walkTarget.y-pos.y).normalized();
+            if(_health <= 0){
+                FlxG.switchState(new MenuState());
             }
 
-            if(this.shouldMove && walkDirection != null){
-                if(Math.abs(walkDirection.y) > Math.abs(walkDirection.x)){
-                    if(walkDirection.y < 0){
-                        this.facing = UP;
+            if(!shooting){
+                pos = new FlxPoint(this.x, this.y);
+                //footPos = new FlxPoint(this.x+this.width/2, this.y+this.height);
+
+                if(this.shouldMove && FlxG.mouse.justPressed()){
+                    walkTarget = new DHPoint(FlxG.mouse.x, FlxG.mouse.y);
+                    this.walking = true;
+                    walkDistance = new DHPoint(walkTarget.x-pos.x, walkTarget.y-pos.y)._length();
+                    walkDirection = new DHPoint(walkTarget.x-pos.x, walkTarget.y-pos.y).normalized();
+                }
+
+                if(this.shouldMove && walkDirection != null){
+                    if(Math.abs(walkDirection.y) > Math.abs(walkDirection.x)){
+                        if(walkDirection.y < 0){
+                            this.facing = UP;
+                        } else {
+                            this.facing = DOWN;
+                        }
                     } else {
-                        this.facing = DOWN;
-                    }
-                } else {
-                    if(walkDirection.x > 0){
-                        this.facing = RIGHT;
-                    } else {
-                        this.facing = LEFT;
+                        if(walkDirection.x > 0){
+                            this.facing = RIGHT;
+                        } else {
+                            this.facing = LEFT;
+                        }
                     }
                 }
-            }
 
-            if (new DHPoint(walkTarget.x, walkTarget.y)._length() < 3) {
-                this.walking = false;
-            }
-
-            if(this.shouldMove && this.walking) {
-                this.walk();
-                if(this.facing == LEFT){
-                    this.play("run");
-                } else if (this.facing == RIGHT){
-                    this.play("run");
-                } else if(this.facing == UP){
-                    this.play("runBack");
-                } else if(this.facing == DOWN){
-                    this.play("run");
+                if (new DHPoint(walkTarget.x, walkTarget.y)._length() < 3) {
+                    this.walking = false;
                 }
-            } else {
-                if(this.facing == LEFT){
-                    this.play("stand");
-                } else if (this.facing == RIGHT){
-                    this.play("stand");
-                } else if(this.facing == UP){
-                    this.play("standBack");
-                } else if(this.facing == DOWN){
-                    this.play("stand");
+
+                if(this.shouldMove && this.walking) {
+                    this.walk();
                 }
             }
         }
